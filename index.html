@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>C2W2 Files</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -199,6 +199,12 @@
             z-index: 9999;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            /* iOS Safe Area support */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            box-sizing: border-box;
         }
 
         /* Status Bar */
@@ -308,16 +314,16 @@
 
         .mobile-app-icon-name {
             margin-top: 3px;
-            font-size: clamp(7px, 1.8vw, 10px);
+            font-size: clamp(8px, 2vw, 11px);
             color: white;
             text-align: center;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             width: var(--icon-size, 18vw);
             font-weight: 500;
-            line-height: 1.1;
+            line-height: 1.4;
+            padding-bottom: 2px;
         }
 
         /* Page Dots */
@@ -562,11 +568,11 @@
             font-size: clamp(8px, 2vw, 10px);
             color: #333;
             text-align: center;
-            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             width: var(--folder-icon-size, 56px);
-            line-height: 1.1;
+            line-height: 1.4;
+            padding-bottom: 2px;
         }
 
         #mobile-folder-dots {
@@ -7529,7 +7535,9 @@ if (thumbnailsEl) {
                         mediaHTML = `<iframe id="mobile-html-iframe" sandbox="allow-scripts allow-same-origin"></iframe>`;
                         break;
                     case 'pdf':
-                        mediaHTML = `<iframe src="${item.url}"></iframe>`;
+                        // Use Google Docs viewer for PDF on mobile (iOS doesn't support direct PDF iframe)
+                        const encodedPdfUrl = encodeURIComponent(item.url);
+                        mediaHTML = `<iframe src="https://docs.google.com/viewer?url=${encodedPdfUrl}&embedded=true" style="border:none;background:white;border-radius:12px;"></iframe>`;
                         break;
                     case 'website':
                         mediaHTML = `<iframe src="${item.url}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`;
@@ -7725,7 +7733,7 @@ if (thumbnailsEl) {
                 }
             }
 
-            // Swipe handling for main pages - smooth iPhone-like dragging
+            // Swipe handling for main pages - smooth iPhone-like dragging with rubber-band
             function setupMobileSwipe() {
                 const pagesContainer = document.getElementById('mobile-pages-container');
                 const pagesWrapper = document.getElementById('mobile-pages-wrapper');
@@ -7742,13 +7750,37 @@ if (thumbnailsEl) {
                     return mobileCurrentPage * pagesContainer.clientWidth;
                 }
 
+                // Get max offset (last page)
+                function getMaxOffset() {
+                    return (mobileTotalPages - 1) * pagesContainer.clientWidth;
+                }
+
+                // Rubber-band effect for over-scroll
+                function applyRubberBand(offset, diffX) {
+                    const maxOffset = getMaxOffset();
+                    const currentSectionIndex = getCurrentSectionIndex();
+                    const canGoLeft = mobileCurrentPage < mobileTotalPages - 1 || currentSectionIndex < mobileDockFolders.length - 1;
+                    const canGoRight = mobileCurrentPage > 0 || currentSectionIndex > 0;
+
+                    // At left edge (first page of first section)
+                    if (offset < 0 && !canGoRight) {
+                        return offset * 0.3; // Rubber-band resistance
+                    }
+                    // At right edge (last page of last section)
+                    if (offset > maxOffset && !canGoLeft) {
+                        const overscroll = offset - maxOffset;
+                        return maxOffset + (overscroll * 0.3); // Rubber-band resistance
+                    }
+                    return offset;
+                }
+
                 // Handle swipe completion - navigate pages or switch sections
                 function handleSwipeEnd(diffX) {
                     const currentSectionIndex = getCurrentSectionIndex();
-                    const threshold = pagesContainer.clientWidth * 0.2; // 20% threshold
+                    const threshold = pagesContainer.clientWidth * 0.15; // 15% threshold
 
-                    // Re-enable transition
-                    pagesWrapper.style.transition = 'transform 0.3s ease-out';
+                    // Re-enable transition with spring effect
+                    pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
                     if (Math.abs(diffX) > threshold) {
                         if (diffX > 0) {
@@ -7805,7 +7837,8 @@ if (thumbnailsEl) {
                     // Only handle horizontal swipes
                     if (isHorizontalSwipe) {
                         const baseOffset = getBaseOffset();
-                        const dragOffset = baseOffset + diffX;
+                        let dragOffset = baseOffset + diffX;
+                        dragOffset = applyRubberBand(dragOffset, diffX);
                         pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
                     }
                 }, { passive: true });
@@ -7820,7 +7853,7 @@ if (thumbnailsEl) {
                         handleSwipeEnd(diffX);
                     } else {
                         // Re-enable transition and snap back
-                        pagesWrapper.style.transition = 'transform 0.3s ease-out';
+                        pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                         updateMobilePagePosition();
                     }
                     isHorizontalSwipe = null;
@@ -7840,7 +7873,8 @@ if (thumbnailsEl) {
                     currentX = e.clientX;
                     const diffX = startX - currentX;
                     const baseOffset = getBaseOffset();
-                    const dragOffset = baseOffset + diffX;
+                    let dragOffset = baseOffset + diffX;
+                    dragOffset = applyRubberBand(dragOffset, diffX);
                     pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
                 });
 
@@ -7849,7 +7883,7 @@ if (thumbnailsEl) {
                     isDragging = false;
 
                     const diffX = startX - currentX;
-                    pagesWrapper.style.transition = 'transform 0.3s ease-out';
+                    pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
                     if (Math.abs(diffX) > 50) {
                         handleSwipeEnd(diffX);
