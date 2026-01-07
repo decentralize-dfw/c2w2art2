@@ -326,11 +326,9 @@
             padding-bottom: 2px;
         }
 
-        /* Page Dots */
+        /* Page Dots - Hidden */
         #mobile-page-dots {
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
+            display: none;
             align-items: center;
             gap: 6px;
             padding: 1% 0;
@@ -7235,10 +7233,11 @@ if (thumbnailsEl) {
                 { key: 'AirDrop', name: 'DFW', icon: 'bolt' }
             ];
 
-            let mobileCurrentPage = 0;
-            let mobileTotalPages = 1;
-            let mobileCurrentFolderKey = 'Cdrive';
-            let mobileAllItems = [];
+            // Global page tracking - all sections rendered side by side
+            let mobileGlobalPageIndex = 0; // Current global page index
+            let mobileGlobalPages = []; // Array of { sectionIndex, sectionKey, items }
+            let mobileTotalGlobalPages = 0;
+
             let mobileFolderCurrentPage = 0;
             let mobileFolderTotalPages = 1;
             let mobileCurrentFolderItems = [];
@@ -7281,6 +7280,35 @@ if (thumbnailsEl) {
                 return typeIcons[item.type] || '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-gray-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>';
             }
 
+            // Build global pages array from all sections
+            function buildMobileGlobalPages() {
+                mobileGlobalPages = [];
+                mobileDockFolders.forEach((folder, sectionIndex) => {
+                    const items = fileSystemDB[folder.key] || [];
+                    const pageCount = Math.max(1, Math.ceil(items.length / MOBILE_ITEMS_PER_PAGE));
+
+                    for (let pageIdx = 0; pageIdx < pageCount; pageIdx++) {
+                        const startIdx = pageIdx * MOBILE_ITEMS_PER_PAGE;
+                        const endIdx = Math.min(startIdx + MOBILE_ITEMS_PER_PAGE, items.length);
+                        mobileGlobalPages.push({
+                            sectionIndex: sectionIndex,
+                            sectionKey: folder.key,
+                            pageInSection: pageIdx,
+                            items: items.slice(startIdx, endIdx)
+                        });
+                    }
+                });
+                mobileTotalGlobalPages = mobileGlobalPages.length;
+            }
+
+            // Get current section index from global page
+            function getCurrentSectionIndex() {
+                if (mobileGlobalPages[mobileGlobalPageIndex]) {
+                    return mobileGlobalPages[mobileGlobalPageIndex].sectionIndex;
+                }
+                return 0;
+            }
+
             // Render mobile dock
             function renderMobileDock() {
                 const dockContainer = document.getElementById('mobile-dock-container');
@@ -7290,68 +7318,57 @@ if (thumbnailsEl) {
 
                 mobileDockFolders.forEach((folder, index) => {
                     const dockIcon = document.createElement('div');
-                    dockIcon.className = 'mobile-dock-icon' + (folder.key === mobileCurrentFolderKey ? ' active' : '');
-                    dockIcon.dataset.folderKey = folder.key;
-                    dockIcon.dataset.index = index;
+                    const isActive = getCurrentSectionIndex() === index;
+                    dockIcon.className = 'mobile-dock-icon' + (isActive ? ' active' : '');
+                    dockIcon.dataset.sectionIndex = index;
                     dockIcon.innerHTML = `
                         <div class="mobile-dock-icon-image">${getMobileDockIconSVG(folder.icon)}</div>
                         <div class="mobile-dock-icon-name">${folder.name}</div>
                     `;
                     dockIcon.addEventListener('click', () => {
-                        switchToMobileSection(index);
+                        goToSection(index);
                     });
                     dockContainer.appendChild(dockIcon);
                 });
             }
 
-            // Switch to a specific section by index
-            function switchToMobileSection(index) {
-                if (index < 0 || index >= mobileDockFolders.length) return;
-
-                mobileCurrentFolderKey = mobileDockFolders[index].key;
-                mobileCurrentPage = 0;
-                renderMobileMainGrid();
-                updateMobileDockActive();
+            // Go to first page of a section
+            function goToSection(sectionIndex) {
+                const pageIndex = mobileGlobalPages.findIndex(p => p.sectionIndex === sectionIndex);
+                if (pageIndex !== -1) {
+                    mobileGlobalPageIndex = pageIndex;
+                    updateMobilePagePosition();
+                    updateMobileDockActive();
+                }
             }
 
             // Update active dock item styling
             function updateMobileDockActive() {
+                const currentSection = getCurrentSectionIndex();
                 const dockIcons = document.querySelectorAll('.mobile-dock-icon');
                 dockIcons.forEach(icon => {
-                    if (icon.dataset.folderKey === mobileCurrentFolderKey) {
-                        icon.classList.add('active');
-                    } else {
-                        icon.classList.remove('active');
-                    }
+                    const sectionIdx = parseInt(icon.dataset.sectionIndex);
+                    icon.classList.toggle('active', sectionIdx === currentSection);
                 });
             }
 
-            // Get current section index
-            function getCurrentSectionIndex() {
-                return mobileDockFolders.findIndex(f => f.key === mobileCurrentFolderKey);
-            }
-
-            // Render main grid pages
+            // Render ALL pages from ALL sections
             function renderMobileMainGrid() {
                 const pagesWrapper = document.getElementById('mobile-pages-wrapper');
-                const dotsContainer = document.getElementById('mobile-page-dots');
-                if (!pagesWrapper || !dotsContainer) return;
+                if (!pagesWrapper) return;
 
-                // Get all items from current folder
-                mobileAllItems = fileSystemDB[mobileCurrentFolderKey] || [];
-                mobileTotalPages = Math.max(1, Math.ceil(mobileAllItems.length / MOBILE_ITEMS_PER_PAGE));
+                // Build global pages
+                buildMobileGlobalPages();
 
-                // Render pages
+                // Render ALL pages
                 pagesWrapper.innerHTML = '';
-                for (let pageIndex = 0; pageIndex < mobileTotalPages; pageIndex++) {
+                mobileGlobalPages.forEach((page, globalIdx) => {
                     const pageEl = document.createElement('div');
                     pageEl.className = 'mobile-page';
+                    pageEl.dataset.globalIndex = globalIdx;
+                    pageEl.dataset.sectionIndex = page.sectionIndex;
 
-                    const startIdx = pageIndex * MOBILE_ITEMS_PER_PAGE;
-                    const endIdx = Math.min(startIdx + MOBILE_ITEMS_PER_PAGE, mobileAllItems.length);
-
-                    for (let i = startIdx; i < endIdx; i++) {
-                        const item = mobileAllItems[i];
+                    page.items.forEach(item => {
                         const iconEl = document.createElement('div');
                         iconEl.className = 'mobile-app-icon';
                         iconEl.innerHTML = `
@@ -7360,38 +7377,22 @@ if (thumbnailsEl) {
                         `;
                         iconEl.addEventListener('click', () => handleMobileItemClick(item));
                         pageEl.appendChild(iconEl);
-                    }
+                    });
 
                     pagesWrapper.appendChild(pageEl);
-                }
-
-                // Render dots
-                dotsContainer.innerHTML = '';
-                for (let i = 0; i < mobileTotalPages; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'mobile-page-dot' + (i === mobileCurrentPage ? ' active' : '');
-                    dot.addEventListener('click', () => {
-                        mobileCurrentPage = i;
-                        updateMobilePagePosition();
-                    });
-                    dotsContainer.appendChild(dot);
-                }
+                });
 
                 updateMobilePagePosition();
+                updateMobileDockActive();
             }
 
             // Update page position
             function updateMobilePagePosition() {
                 const pagesWrapper = document.getElementById('mobile-pages-wrapper');
-                const dots = document.querySelectorAll('#mobile-page-dots .mobile-page-dot');
 
                 if (pagesWrapper) {
-                    pagesWrapper.style.transform = `translateX(-${mobileCurrentPage * 100}%)`;
+                    pagesWrapper.style.transform = `translateX(-${mobileGlobalPageIndex * 100}%)`;
                 }
-
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === mobileCurrentPage);
-                });
             }
 
             // Handle item click
@@ -7583,12 +7584,14 @@ if (thumbnailsEl) {
                 if (!viewer) return;
 
                 viewer.classList.remove('visible');
+                viewer.style.transform = 'translateY(100%)'; // Animate out
                 setTimeout(() => {
                     viewer.style.display = 'none';
+                    viewer.style.transform = ''; // Reset transform completely
                     // Clean up media
                     const mediaArea = document.getElementById('mobile-app-media-area');
                     if (mediaArea) mediaArea.innerHTML = '';
-                }, 250);
+                }, 300);
             }
 
             // Load GLB model for mobile
@@ -7747,66 +7750,53 @@ if (thumbnailsEl) {
 
                 // Get current base offset in pixels
                 function getBaseOffset() {
-                    return mobileCurrentPage * pagesContainer.clientWidth;
+                    return mobileGlobalPageIndex * pagesContainer.clientWidth;
                 }
 
                 // Get max offset (last page)
                 function getMaxOffset() {
-                    return (mobileTotalPages - 1) * pagesContainer.clientWidth;
+                    return (mobileTotalGlobalPages - 1) * pagesContainer.clientWidth;
                 }
 
                 // Rubber-band effect for over-scroll
-                function applyRubberBand(offset, diffX) {
+                function applyRubberBand(offset) {
                     const maxOffset = getMaxOffset();
-                    const currentSectionIndex = getCurrentSectionIndex();
-                    const canGoLeft = mobileCurrentPage < mobileTotalPages - 1 || currentSectionIndex < mobileDockFolders.length - 1;
-                    const canGoRight = mobileCurrentPage > 0 || currentSectionIndex > 0;
 
-                    // At left edge (first page of first section)
-                    if (offset < 0 && !canGoRight) {
+                    // At left edge (first page)
+                    if (offset < 0) {
                         return offset * 0.3; // Rubber-band resistance
                     }
-                    // At right edge (last page of last section)
-                    if (offset > maxOffset && !canGoLeft) {
+                    // At right edge (last page)
+                    if (offset > maxOffset) {
                         const overscroll = offset - maxOffset;
                         return maxOffset + (overscroll * 0.3); // Rubber-band resistance
                     }
                     return offset;
                 }
 
-                // Handle swipe completion - navigate pages or switch sections
+                // Handle swipe completion
                 function handleSwipeEnd(diffX) {
-                    const currentSectionIndex = getCurrentSectionIndex();
                     const threshold = pagesContainer.clientWidth * 0.15; // 15% threshold
+                    const prevSection = getCurrentSectionIndex();
 
                     // Re-enable transition with spring effect
                     pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
                     if (Math.abs(diffX) > threshold) {
-                        if (diffX > 0) {
-                            // Swipe left - go to next page or next section
-                            if (mobileCurrentPage < mobileTotalPages - 1) {
-                                mobileCurrentPage++;
-                                updateMobilePagePosition();
-                            } else if (currentSectionIndex < mobileDockFolders.length - 1) {
-                                switchToMobileSection(currentSectionIndex + 1);
-                            } else {
-                                updateMobilePagePosition(); // Snap back
-                            }
-                        } else {
-                            // Swipe right - go to previous page or previous section
-                            if (mobileCurrentPage > 0) {
-                                mobileCurrentPage--;
-                                updateMobilePagePosition();
-                            } else if (currentSectionIndex > 0) {
-                                switchToMobileSection(currentSectionIndex - 1);
-                            } else {
-                                updateMobilePagePosition(); // Snap back
-                            }
+                        if (diffX > 0 && mobileGlobalPageIndex < mobileTotalGlobalPages - 1) {
+                            // Swipe left - go to next page
+                            mobileGlobalPageIndex++;
+                        } else if (diffX < 0 && mobileGlobalPageIndex > 0) {
+                            // Swipe right - go to previous page
+                            mobileGlobalPageIndex--;
                         }
-                    } else {
-                        // Snap back to current position
-                        updateMobilePagePosition();
+                    }
+
+                    updateMobilePagePosition();
+
+                    // Update dock if section changed
+                    if (getCurrentSectionIndex() !== prevSection) {
+                        updateMobileDockActive();
                     }
                 }
 
@@ -7838,7 +7828,7 @@ if (thumbnailsEl) {
                     if (isHorizontalSwipe) {
                         const baseOffset = getBaseOffset();
                         let dragOffset = baseOffset + diffX;
-                        dragOffset = applyRubberBand(dragOffset, diffX);
+                        dragOffset = applyRubberBand(dragOffset);
                         pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
                     }
                 }, { passive: true });
@@ -7874,7 +7864,7 @@ if (thumbnailsEl) {
                     const diffX = startX - currentX;
                     const baseOffset = getBaseOffset();
                     let dragOffset = baseOffset + diffX;
-                    dragOffset = applyRubberBand(dragOffset, diffX);
+                    dragOffset = applyRubberBand(dragOffset);
                     pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
                 });
 
