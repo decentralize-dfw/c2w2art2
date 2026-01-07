@@ -392,22 +392,21 @@
             border-radius: 22%;
             background: rgba(255,255,255,0.3);
             backdrop-filter: blur(5px);
-            transition: all 0.2s ease;
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             border: 2px solid transparent;
-        }
-
-        /* Active dock icon styling */
-        .mobile-dock-icon.active .mobile-dock-icon-image {
-            background: rgba(255,255,255,0.5);
-            border: 2px solid rgba(255,255,255,0.8);
-            box-shadow: 0 0 15px rgba(255,255,255,0.4), 0 4px 12px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.15s ease;
             flex-shrink: 0;
+        }
+
+        /* Active dock icon styling */
+        .mobile-dock-icon.active .mobile-dock-icon-image {
+            background: rgba(255,255,255,0.5);
+            border-color: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(255,255,255,0.4), 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .mobile-dock-icon-image:active {
@@ -7613,7 +7612,8 @@ if (thumbnailsEl) {
                         const containerHeight = container.clientHeight || 300;
 
                         const scene = new THREE.Scene();
-                        scene.background = new THREE.Color(0x1a1a2e);
+                        // Transparent background to show popup's blurry dark background
+                        scene.background = null;
 
                         const camera = new THREE.PerspectiveCamera(45, containerWidth / containerHeight, 0.01, 1000);
                         camera.position.set(0, 1, 4);
@@ -7725,78 +7725,136 @@ if (thumbnailsEl) {
                 }
             }
 
-            // Swipe handling for main pages
+            // Swipe handling for main pages - smooth iPhone-like dragging
             function setupMobileSwipe() {
                 const pagesContainer = document.getElementById('mobile-pages-container');
-                if (!pagesContainer) return;
+                const pagesWrapper = document.getElementById('mobile-pages-wrapper');
+                if (!pagesContainer || !pagesWrapper) return;
 
                 let startX = 0;
                 let startY = 0;
+                let currentX = 0;
                 let isDragging = false;
+                let isHorizontalSwipe = null;
 
-                // Handle swipe logic - navigate pages or switch sections
-                function handleSwipe(diffX) {
+                // Get current base offset in pixels
+                function getBaseOffset() {
+                    return mobileCurrentPage * pagesContainer.clientWidth;
+                }
+
+                // Handle swipe completion - navigate pages or switch sections
+                function handleSwipeEnd(diffX) {
                     const currentSectionIndex = getCurrentSectionIndex();
+                    const threshold = pagesContainer.clientWidth * 0.2; // 20% threshold
 
-                    if (diffX > 0) {
-                        // Swipe left - go to next page or next section
-                        if (mobileCurrentPage < mobileTotalPages - 1) {
-                            mobileCurrentPage++;
-                            updateMobilePagePosition();
-                        } else if (currentSectionIndex < mobileDockFolders.length - 1) {
-                            // At last page, switch to next section
-                            switchToMobileSection(currentSectionIndex + 1);
+                    // Re-enable transition
+                    pagesWrapper.style.transition = 'transform 0.3s ease-out';
+
+                    if (Math.abs(diffX) > threshold) {
+                        if (diffX > 0) {
+                            // Swipe left - go to next page or next section
+                            if (mobileCurrentPage < mobileTotalPages - 1) {
+                                mobileCurrentPage++;
+                                updateMobilePagePosition();
+                            } else if (currentSectionIndex < mobileDockFolders.length - 1) {
+                                switchToMobileSection(currentSectionIndex + 1);
+                            } else {
+                                updateMobilePagePosition(); // Snap back
+                            }
+                        } else {
+                            // Swipe right - go to previous page or previous section
+                            if (mobileCurrentPage > 0) {
+                                mobileCurrentPage--;
+                                updateMobilePagePosition();
+                            } else if (currentSectionIndex > 0) {
+                                switchToMobileSection(currentSectionIndex - 1);
+                            } else {
+                                updateMobilePagePosition(); // Snap back
+                            }
                         }
-                    } else if (diffX < 0) {
-                        // Swipe right - go to previous page or previous section
-                        if (mobileCurrentPage > 0) {
-                            mobileCurrentPage--;
-                            updateMobilePagePosition();
-                        } else if (currentSectionIndex > 0) {
-                            // At first page, switch to previous section
-                            switchToMobileSection(currentSectionIndex - 1);
-                        }
+                    } else {
+                        // Snap back to current position
+                        updateMobilePagePosition();
                     }
                 }
 
+                // Touch events
                 pagesContainer.addEventListener('touchstart', (e) => {
                     startX = e.touches[0].clientX;
                     startY = e.touches[0].clientY;
+                    currentX = startX;
                     isDragging = true;
+                    isHorizontalSwipe = null;
+                    // Disable transition during drag
+                    pagesWrapper.style.transition = 'none';
                 }, { passive: true });
 
                 pagesContainer.addEventListener('touchmove', (e) => {
                     if (!isDragging) return;
+
+                    currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    const diffX = startX - currentX;
+                    const diffY = startY - currentY;
+
+                    // Determine swipe direction on first significant move
+                    if (isHorizontalSwipe === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+                        isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+                    }
+
+                    // Only handle horizontal swipes
+                    if (isHorizontalSwipe) {
+                        const baseOffset = getBaseOffset();
+                        const dragOffset = baseOffset + diffX;
+                        pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
+                    }
                 }, { passive: true });
 
                 pagesContainer.addEventListener('touchend', (e) => {
                     if (!isDragging) return;
                     isDragging = false;
 
-                    const endX = e.changedTouches[0].clientX;
-                    const endY = e.changedTouches[0].clientY;
-                    const diffX = startX - endX;
-                    const diffY = startY - endY;
+                    const diffX = startX - currentX;
 
-                    // Only horizontal swipes
-                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                        handleSwipe(diffX);
+                    if (isHorizontalSwipe && Math.abs(diffX) > 10) {
+                        handleSwipeEnd(diffX);
+                    } else {
+                        // Re-enable transition and snap back
+                        pagesWrapper.style.transition = 'transform 0.3s ease-out';
+                        updateMobilePagePosition();
                     }
+                    isHorizontalSwipe = null;
                 }, { passive: true });
 
                 // Mouse support for desktop in narrow mode
                 pagesContainer.addEventListener('mousedown', (e) => {
                     startX = e.clientX;
+                    currentX = startX;
                     isDragging = true;
+                    pagesWrapper.style.transition = 'none';
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    currentX = e.clientX;
+                    const diffX = startX - currentX;
+                    const baseOffset = getBaseOffset();
+                    const dragOffset = baseOffset + diffX;
+                    pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
                 });
 
                 document.addEventListener('mouseup', (e) => {
                     if (!isDragging) return;
                     isDragging = false;
 
-                    const diffX = startX - e.clientX;
+                    const diffX = startX - currentX;
+                    pagesWrapper.style.transition = 'transform 0.3s ease-out';
+
                     if (Math.abs(diffX) > 50) {
-                        handleSwipe(diffX);
+                        handleSwipeEnd(diffX);
+                    } else {
+                        updateMobilePagePosition();
                     }
                 });
             }
