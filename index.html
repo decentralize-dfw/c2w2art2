@@ -7573,7 +7573,9 @@ if (thumbnailsEl) {
                     }, 100);
                 }
 
-                // Show viewer
+                // Show viewer - always reset position first
+                viewer.style.transform = '';
+                viewer.style.transition = '';
                 viewer.style.display = 'flex';
                 setTimeout(() => viewer.classList.add('visible'), 10);
             }
@@ -7981,6 +7983,16 @@ if (thumbnailsEl) {
                 let startY = 0;
                 let currentY = 0;
                 let isDragging = false;
+                const CLOSE_THRESHOLD = 150; // Need to drag 150px to close
+
+                function resetViewerPosition() {
+                    viewer.style.transition = 'transform 0.25s ease-out';
+                    viewer.style.transform = 'translateY(0)';
+                    // Remove transition after animation
+                    setTimeout(() => {
+                        viewer.style.transition = '';
+                    }, 250);
+                }
 
                 // Touch events
                 viewer.addEventListener('touchstart', (e) => {
@@ -7988,6 +8000,7 @@ if (thumbnailsEl) {
                         startY = e.touches[0].clientY;
                         currentY = startY;
                         isDragging = true;
+                        viewer.style.transition = 'none'; // Disable transition during drag
                     }
                 }, { passive: true });
 
@@ -7996,6 +8009,7 @@ if (thumbnailsEl) {
                     currentY = e.touches[0].clientY;
                     const diff = currentY - startY;
 
+                    // Only allow dragging down, not up
                     if (diff > 0) {
                         viewer.style.transform = `translateY(${diff}px)`;
                     }
@@ -8007,10 +8021,10 @@ if (thumbnailsEl) {
 
                     const diff = currentY - startY;
 
-                    if (diff > 100) {
+                    if (diff > CLOSE_THRESHOLD) {
                         closeMobileAppViewer();
                     } else {
-                        viewer.style.transform = 'translateY(0)';
+                        resetViewerPosition();
                     }
                 }, { passive: true });
 
@@ -8020,6 +8034,7 @@ if (thumbnailsEl) {
                         startY = e.clientY;
                         currentY = startY;
                         isDragging = true;
+                        viewer.style.transition = 'none';
                         e.preventDefault();
                     }
                 });
@@ -8040,17 +8055,17 @@ if (thumbnailsEl) {
 
                     const diff = currentY - startY;
 
-                    if (diff > 100) {
+                    if (diff > CLOSE_THRESHOLD) {
                         closeMobileAppViewer();
                     } else {
-                        viewer.style.transform = 'translateY(0)';
+                        resetViewerPosition();
                     }
                 });
 
                 viewer.addEventListener('mouseleave', () => {
                     if (isDragging) {
                         isDragging = false;
-                        viewer.style.transform = 'translateY(0)';
+                        resetViewerPosition();
                     }
                 });
             }
