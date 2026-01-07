@@ -160,9 +160,664 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
+        /* ============================================= */
+        /* ========== MOBILE INTERFACE STYLES ========= */
+        /* ============================================= */
+
+        /* Mobile breakpoint - 768px and below */
+        @media (max-width: 768px) {
+            body {
+                padding: 0 !important;
+            }
+
+            /* Hide desktop elements on mobile */
+            .finder-window,
+            #desktop-icons,
+            #minimized-icon-container,
+            #window-container {
+                display: none !important;
+            }
+
+            /* Show mobile interface */
+            #mobile-interface {
+                display: flex !important;
+            }
+        }
+
+        /* Mobile Interface Container */
+        #mobile-interface {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            flex-direction: column;
+            background: transparent;
+            z-index: 9999;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+        }
+
+        /* Status Bar */
+        #mobile-status-bar {
+            flex-shrink: 0;
+            height: 4%;
+            min-height: 24px;
+            max-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            color: white;
+            font-size: clamp(10px, 2.5vw, 14px);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Main Screen Area */
+        #mobile-main-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 1% 2%;
+            min-height: 0; /* Important for flex child */
+        }
+
+        /* Pages Container */
+        #mobile-pages-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        #mobile-pages-wrapper {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+            touch-action: pan-y pinch-zoom;
+        }
+
+        .mobile-page {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 2%;
+            padding: 1%;
+            box-sizing: border-box;
+            align-items: center;
+            justify-items: center;
+        }
+
+        /* App Icon - SQUARE */
+        .mobile-app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .mobile-app-icon-image {
+            /* Square icon: use min(width, height) based calculation */
+            --icon-size: min(18vw, calc((100dvh - 20%) / 8));
+            width: var(--icon-size);
+            height: var(--icon-size);
+            aspect-ratio: 1 / 1;
+            border-radius: 22%;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .mobile-app-icon-image:active {
+            transform: scale(0.92);
+        }
+
+        .mobile-app-icon-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mobile-app-icon-image svg {
+            width: 50%;
+            height: 50%;
+            flex-shrink: 0;
+        }
+
+        .mobile-app-icon-name {
+            margin-top: 3px;
+            font-size: clamp(7px, 1.8vw, 10px);
+            color: white;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: var(--icon-size, 18vw);
+            font-weight: 500;
+            line-height: 1.1;
+        }
+
+        /* Page Dots */
+        #mobile-page-dots {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 1% 0;
+            height: 3%;
+            min-height: 16px;
+        }
+
+        .mobile-page-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transition: all 0.2s ease;
+        }
+
+        .mobile-page-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        /* Bottom Dock */
+        #mobile-dock {
+            flex-shrink: 0;
+            height: 11%;
+            min-height: 70px;
+            max-height: 100px;
+            padding: 1% 3% 3%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #mobile-dock-container {
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            width: 92%;
+            max-width: 380px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+            gap: 4px;
+        }
+
+        .mobile-dock-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            flex: 1;
+            max-width: 20%;
+        }
+
+        .mobile-dock-icon-image {
+            /* Square dock icon */
+            --dock-icon-size: min(14vw, 52px);
+            width: var(--dock-icon-size);
+            height: var(--dock-icon-size);
+            aspect-ratio: 1 / 1;
+            border-radius: 22%;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .mobile-dock-icon-image:active {
+            transform: scale(0.9);
+        }
+
+        .mobile-dock-icon-image svg {
+            width: 55%;
+            height: 55%;
+            flex-shrink: 0;
+        }
+
+        .mobile-dock-icon-name {
+            margin-top: 3px;
+            font-size: clamp(7px, 1.8vw, 9px);
+            color: white;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+            font-weight: 500;
+        }
+
+        /* Folder Overlay */
+        #mobile-folder-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #mobile-folder-overlay.visible {
+            opacity: 1;
+        }
+
+        #mobile-folder-container {
+            /* Proportional folder popup */
+            width: 80%;
+            max-width: min(350px, 80vw);
+            aspect-ratio: 1 / 1.1;
+            max-height: 70dvh;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 4%;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.25s ease;
+            box-sizing: border-box;
+            cursor: grab;
+            user-select: none;
+        }
+
+        #mobile-folder-overlay.visible #mobile-folder-container {
+            transform: scale(1);
+        }
+
+        #mobile-folder-title {
+            flex-shrink: 0;
+            font-size: clamp(14px, 4vw, 18px);
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 3%;
+        }
+
+        #mobile-folder-pages-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            min-height: 0;
+        }
+
+        #mobile-folder-pages {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+        }
+
+        .mobile-folder-page {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 4%;
+            padding: 2%;
+            box-sizing: border-box;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .mobile-folder-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .mobile-folder-icon-image {
+            /* Square folder icon */
+            --folder-icon-size: min(18vw, 56px);
+            width: var(--folder-icon-size);
+            height: var(--folder-icon-size);
+            aspect-ratio: 1 / 1;
+            border-radius: 22%;
+            background: rgba(200,200,200,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .mobile-folder-icon-image:active {
+            transform: scale(0.92);
+        }
+
+        .mobile-folder-icon-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mobile-folder-icon-image svg {
+            width: 50%;
+            height: 50%;
+            flex-shrink: 0;
+        }
+
+        .mobile-folder-icon-name {
+            margin-top: 3px;
+            font-size: clamp(8px, 2vw, 10px);
+            color: #333;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: var(--folder-icon-size, 56px);
+            line-height: 1.1;
+        }
+
+        #mobile-folder-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 0 4px;
+        }
+
+        .mobile-folder-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .mobile-folder-dot.active {
+            background: rgba(0,0,0,0.6);
+        }
+
+        /* App Viewer */
+        #mobile-app-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            flex-direction: column;
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            transform: translateY(100%);
+        }
+
+        #mobile-app-viewer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #mobile-app-close {
+            position: absolute;
+            top: 3%;
+            right: 4%;
+            width: clamp(28px, 8vw, 36px);
+            height: clamp(28px, 8vw, 36px);
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.15s ease;
+        }
+
+        #mobile-app-close:active {
+            transform: scale(0.9);
+        }
+
+        #mobile-app-close svg {
+            width: 50%;
+            height: 50%;
+            color: white;
+        }
+
+        #mobile-app-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding-top: 8%;
+        }
+
+        #mobile-app-media-area {
+            height: 70%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2%;
+            overflow: hidden;
+        }
+
+        #mobile-app-media-area > * {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        #mobile-app-media-area iframe,
+        #mobile-app-media-area video {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #mobile-app-media-area pre {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 4%;
+            font-size: 9px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        #mobile-app-info-area {
+            height: 30%;
+            overflow-y: auto;
+            padding: 3% 5%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        #mobile-app-title {
+            font-size: 9px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        #mobile-app-description {
+            font-size: 9px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .mobile-app-detail {
+            font-size: 9px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2px;
+        }
+
+        .mobile-app-detail span {
+            color: rgba(255,255,255,0.5);
+        }
+
+        #mobile-app-links {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .mobile-app-link {
+            font-size: 9px;
+            color: #60a5fa;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Swipe indicator line */
+        #mobile-app-swipe-indicator {
+            width: 15%;
+            height: 4px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 2px;
+            margin: 8px auto;
+        }
+
+        /* GLB container for mobile */
+        .mobile-glb-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .mobile-glb-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body class="p-8 flex items-center justify-center min-h-screen">
+
+    <!-- ============================================= -->
+    <!-- ========== MOBILE INTERFACE HTML =========== -->
+    <!-- ============================================= -->
+    <div id="mobile-interface">
+        <!-- Status Bar -->
+        <div id="mobile-status-bar">
+            <span id="mobile-time">9:41</span>
+            <span id="mobile-indicators">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9m0-2C5.92 1 1 5.92 1 12s4.92 11 11 11 11-4.92 11-11S18.08 1 12 1z"/></svg>
+            </span>
+        </div>
+
+        <!-- Main Area with Pages -->
+        <div id="mobile-main-area">
+            <div id="mobile-pages-container">
+                <div id="mobile-pages-wrapper">
+                    <!-- Pages will be dynamically generated -->
+                </div>
+            </div>
+            <div id="mobile-page-dots">
+                <!-- Dots will be dynamically generated -->
+            </div>
+        </div>
+
+        <!-- Bottom Dock -->
+        <div id="mobile-dock">
+            <div id="mobile-dock-container">
+                <!-- Dock icons will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Folder Overlay -->
+    <div id="mobile-folder-overlay">
+        <div id="mobile-folder-container">
+            <div id="mobile-folder-title">Folder</div>
+            <div id="mobile-folder-pages-wrapper">
+                <div id="mobile-folder-pages">
+                    <!-- Folder pages will be dynamically generated -->
+                </div>
+            </div>
+            <div id="mobile-folder-dots">
+                <!-- Folder dots will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile App Viewer -->
+    <div id="mobile-app-viewer">
+        <div id="mobile-app-close">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </div>
+        <div id="mobile-app-content">
+            <div id="mobile-app-media-area">
+                <!-- Media content will be dynamically generated -->
+            </div>
+            <div id="mobile-app-info-area">
+                <div id="mobile-app-swipe-indicator"></div>
+                <div id="mobile-app-title"></div>
+                <div id="mobile-app-description"></div>
+                <div id="mobile-app-details">
+                    <!-- Details will be dynamically generated -->
+                </div>
+                <div id="mobile-app-links">
+                    <!-- Links will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================= -->
 
     <!-- YENİ: Masaüstü İkonları Alanı -->
     <div id="desktop-icons" class="absolute top-0 left-0 p-4 z-0 space-y-4">
@@ -6549,6 +7204,722 @@ if (thumbnailsEl) {
                     }
                 }
             });
+
+            // ============================================= //
+            // ========== MOBILE INTERFACE LOGIC ========== //
+            // ============================================= //
+
+            const MOBILE_ITEMS_PER_PAGE = 24; // 4 columns x 6 rows
+            const MOBILE_FOLDER_ITEMS_PER_PAGE = 9; // 3x3 grid
+
+            // Mobile dock folders (5 items)
+            const mobileDockFolders = [
+                { key: 'Cdrive', name: 'C:/', icon: 'drive' },
+                { key: 'Documents', name: 'Documents', icon: 'document' },
+                { key: 'Applications', name: 'Applications', icon: 'app' },
+                { key: 'Recents', name: 'Season 1', icon: 'clock' },
+                { key: 'AirDrop', name: 'DFW', icon: 'bolt' }
+            ];
+
+            let mobileCurrentPage = 0;
+            let mobileTotalPages = 1;
+            let mobileCurrentFolderKey = 'Cdrive';
+            let mobileAllItems = [];
+            let mobileFolderCurrentPage = 0;
+            let mobileFolderTotalPages = 1;
+            let mobileCurrentFolderItems = [];
+            let mobileAppViewerSwipeStartY = 0;
+
+            // Get dock icon SVG
+            function getMobileDockIconSVG(iconType) {
+                const icons = {
+                    'drive': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>',
+                    'document': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>',
+                    'app': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>',
+                    'clock': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                    'bolt': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>'
+                };
+                return icons[iconType] || icons['document'];
+            }
+
+            // Get mobile icon HTML for an item
+            function getMobileIconHTML(item) {
+                if (item.type === 'folder') {
+                    return '<svg fill="currentColor" viewBox="0 0 20 20" class="text-blue-400"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>';
+                }
+                if (item.type === 'image') {
+                    return `<img src="${item.url}" alt="${item.name}" onerror="this.parentElement.innerHTML='<svg fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\' class=\\'text-gray-400\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1.586-1.586a2 2 0 00-2.828 0L6 18m6-6l.01.01\\'></path></svg>';">`;
+                }
+                if ((item.type === 'html' || item.type === 'link') && item.iconUrl) {
+                    return `<img src="${item.iconUrl}" alt="${item.name}" onerror="this.parentElement.innerHTML='<svg fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\' class=\\'text-gray-500\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M10 20l4-16m-8 4l-4 4 4 4m16-8l-4 4 4 4\\'></path></svg>';">`;
+                }
+                // Default icons by type
+                const typeIcons = {
+                    'video': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-red-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 18h10a2 2 0 002-2V8a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>',
+                    'text': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                    'html': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-orange-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m-8 4l-4 4 4 4m16-8l-4 4 4 4"></path></svg>',
+                    'pdf': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-red-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                    'glb': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-purple-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 10l8 4m6 0v-4m0 0L4 11m6 4l8-4m-8 4v4m0 0L4 17m6 4l8-4"></path></svg>',
+                    'vrm': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-purple-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 10l8 4m6 0v-4m0 0L4 11m6 4l8-4m-8 4v4m0 0L4 17m6 4l8-4"></path></svg>',
+                    'link': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>',
+                    'website': '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-green-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>'
+                };
+                return typeIcons[item.type] || '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-gray-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>';
+            }
+
+            // Render mobile dock
+            function renderMobileDock() {
+                const dockContainer = document.getElementById('mobile-dock-container');
+                if (!dockContainer) return;
+
+                dockContainer.innerHTML = '';
+
+                mobileDockFolders.forEach(folder => {
+                    const dockIcon = document.createElement('div');
+                    dockIcon.className = 'mobile-dock-icon';
+                    dockIcon.innerHTML = `
+                        <div class="mobile-dock-icon-image">${getMobileDockIconSVG(folder.icon)}</div>
+                        <div class="mobile-dock-icon-name">${folder.name}</div>
+                    `;
+                    dockIcon.addEventListener('click', () => {
+                        mobileCurrentFolderKey = folder.key;
+                        mobileCurrentPage = 0;
+                        renderMobileMainGrid();
+                    });
+                    dockContainer.appendChild(dockIcon);
+                });
+            }
+
+            // Render main grid pages
+            function renderMobileMainGrid() {
+                const pagesWrapper = document.getElementById('mobile-pages-wrapper');
+                const dotsContainer = document.getElementById('mobile-page-dots');
+                if (!pagesWrapper || !dotsContainer) return;
+
+                // Get all items from current folder
+                mobileAllItems = fileSystemDB[mobileCurrentFolderKey] || [];
+                mobileTotalPages = Math.max(1, Math.ceil(mobileAllItems.length / MOBILE_ITEMS_PER_PAGE));
+
+                // Render pages
+                pagesWrapper.innerHTML = '';
+                for (let pageIndex = 0; pageIndex < mobileTotalPages; pageIndex++) {
+                    const pageEl = document.createElement('div');
+                    pageEl.className = 'mobile-page';
+
+                    const startIdx = pageIndex * MOBILE_ITEMS_PER_PAGE;
+                    const endIdx = Math.min(startIdx + MOBILE_ITEMS_PER_PAGE, mobileAllItems.length);
+
+                    for (let i = startIdx; i < endIdx; i++) {
+                        const item = mobileAllItems[i];
+                        const iconEl = document.createElement('div');
+                        iconEl.className = 'mobile-app-icon';
+                        iconEl.innerHTML = `
+                            <div class="mobile-app-icon-image">${getMobileIconHTML(item)}</div>
+                            <div class="mobile-app-icon-name">${item.name}</div>
+                        `;
+                        iconEl.addEventListener('click', () => handleMobileItemClick(item));
+                        pageEl.appendChild(iconEl);
+                    }
+
+                    pagesWrapper.appendChild(pageEl);
+                }
+
+                // Render dots
+                dotsContainer.innerHTML = '';
+                for (let i = 0; i < mobileTotalPages; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'mobile-page-dot' + (i === mobileCurrentPage ? ' active' : '');
+                    dot.addEventListener('click', () => {
+                        mobileCurrentPage = i;
+                        updateMobilePagePosition();
+                    });
+                    dotsContainer.appendChild(dot);
+                }
+
+                updateMobilePagePosition();
+            }
+
+            // Update page position
+            function updateMobilePagePosition() {
+                const pagesWrapper = document.getElementById('mobile-pages-wrapper');
+                const dots = document.querySelectorAll('#mobile-page-dots .mobile-page-dot');
+
+                if (pagesWrapper) {
+                    pagesWrapper.style.transform = `translateX(-${mobileCurrentPage * 100}%)`;
+                }
+
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === mobileCurrentPage);
+                });
+            }
+
+            // Handle item click
+            function handleMobileItemClick(item) {
+                if (item.type === 'folder') {
+                    openMobileFolder(item);
+                } else if (item.type === 'link') {
+                    window.open(item.url, '_blank');
+                } else {
+                    openMobileAppViewer(item);
+                }
+            }
+
+            // Open folder overlay
+            function openMobileFolder(item) {
+                const folderKey = item.folderKey || item.name;
+                mobileCurrentFolderItems = fileSystemDB[folderKey] || [];
+                mobileFolderTotalPages = Math.max(1, Math.ceil(mobileCurrentFolderItems.length / MOBILE_FOLDER_ITEMS_PER_PAGE));
+                mobileFolderCurrentPage = 0;
+
+                const overlay = document.getElementById('mobile-folder-overlay');
+                const title = document.getElementById('mobile-folder-title');
+                const pagesContainer = document.getElementById('mobile-folder-pages');
+                const dotsContainer = document.getElementById('mobile-folder-dots');
+
+                if (!overlay || !title || !pagesContainer || !dotsContainer) return;
+
+                title.textContent = item.name;
+
+                // Render folder pages
+                pagesContainer.innerHTML = '';
+                for (let pageIndex = 0; pageIndex < mobileFolderTotalPages; pageIndex++) {
+                    const pageEl = document.createElement('div');
+                    pageEl.className = 'mobile-folder-page';
+
+                    const startIdx = pageIndex * MOBILE_FOLDER_ITEMS_PER_PAGE;
+                    const endIdx = Math.min(startIdx + MOBILE_FOLDER_ITEMS_PER_PAGE, mobileCurrentFolderItems.length);
+
+                    for (let i = startIdx; i < endIdx; i++) {
+                        const folderItem = mobileCurrentFolderItems[i];
+                        const iconEl = document.createElement('div');
+                        iconEl.className = 'mobile-folder-icon';
+                        iconEl.innerHTML = `
+                            <div class="mobile-folder-icon-image">${getMobileIconHTML(folderItem)}</div>
+                            <div class="mobile-folder-icon-name">${folderItem.name}</div>
+                        `;
+                        iconEl.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            handleMobileItemClick(folderItem);
+                        });
+                        pageEl.appendChild(iconEl);
+                    }
+
+                    pagesContainer.appendChild(pageEl);
+                }
+
+                // Render folder dots
+                dotsContainer.innerHTML = '';
+                if (mobileFolderTotalPages > 1) {
+                    for (let i = 0; i < mobileFolderTotalPages; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'mobile-folder-dot' + (i === mobileFolderCurrentPage ? ' active' : '');
+                        dotsContainer.appendChild(dot);
+                    }
+                }
+
+                // Show overlay
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('visible'), 10);
+            }
+
+            // Close folder overlay
+            function closeMobileFolder() {
+                const overlay = document.getElementById('mobile-folder-overlay');
+                if (!overlay) return;
+
+                overlay.classList.remove('visible');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 250);
+            }
+
+            // Open app viewer
+            function openMobileAppViewer(item) {
+                const viewer = document.getElementById('mobile-app-viewer');
+                const mediaArea = document.getElementById('mobile-app-media-area');
+                const titleEl = document.getElementById('mobile-app-title');
+                const descEl = document.getElementById('mobile-app-description');
+                const detailsEl = document.getElementById('mobile-app-details');
+                const linksEl = document.getElementById('mobile-app-links');
+
+                if (!viewer || !mediaArea) return;
+
+                // Set title and description
+                if (titleEl) titleEl.textContent = item.name;
+                if (descEl) descEl.textContent = item.description || '';
+
+                // Set details
+                if (detailsEl) {
+                    detailsEl.innerHTML = `
+                        <div class="mobile-app-detail"><span>Created:</span> ${item.created || '-'}</div>
+                        <div class="mobile-app-detail"><span>Medium:</span> ${item.medium || '-'}</div>
+                        <div class="mobile-app-detail"><span>Size:</span> ${item.size || '-'}</div>
+                    `;
+                }
+
+                // Set links
+                if (linksEl) {
+                    linksEl.innerHTML = '';
+                    const links = item.links || [];
+                    links.forEach(link => {
+                        const linkEl = document.createElement('a');
+                        linkEl.className = 'mobile-app-link';
+                        linkEl.textContent = link.name || link.url;
+                        linkEl.href = link.url;
+                        linkEl.target = '_blank';
+                        linksEl.appendChild(linkEl);
+                    });
+                }
+
+                // Set media content
+                let mediaHTML = '';
+                switch(item.type) {
+                    case 'image':
+                        mediaHTML = `<img src="${item.url}" alt="${item.name}" onerror="this.src='https://placehold.co/400x400/333/666?text=Image';">`;
+                        break;
+                    case 'video':
+                        if (item.url && item.url.includes('youtube.com')) {
+                            mediaHTML = `<iframe src="${item.url}" allowfullscreen></iframe>`;
+                        } else {
+                            mediaHTML = `<video controls autoplay playsinline><source src="${item.url}" type="video/mp4"></video>`;
+                        }
+                        break;
+                    case 'text':
+                        mediaHTML = `<pre>${item.content || ''}</pre>`;
+                        break;
+                    case 'html':
+                        mediaHTML = `<iframe id="mobile-html-iframe" sandbox="allow-scripts allow-same-origin"></iframe>`;
+                        break;
+                    case 'pdf':
+                        mediaHTML = `<iframe src="${item.url}"></iframe>`;
+                        break;
+                    case 'website':
+                        mediaHTML = `<iframe src="${item.url}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`;
+                        break;
+                    case 'glb':
+                    case 'vrm':
+                        mediaHTML = `<div class="mobile-glb-container" id="mobile-glb-container-${item.id}"></div>`;
+                        break;
+                    default:
+                        mediaHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">${getMobileIconHTML(item).replace('width="50%"', 'width="120px"').replace('height="50%"', 'height="120px"')}</div>`;
+                }
+                mediaArea.innerHTML = mediaHTML;
+
+                // Load HTML content
+                if (item.type === 'html' && item.url) {
+                    const iframe = document.getElementById('mobile-html-iframe');
+                    if (iframe) {
+                        fetch(item.url)
+                            .then(r => r.ok ? r.text() : Promise.reject())
+                            .then(html => { iframe.srcdoc = html; })
+                            .catch(() => { iframe.srcdoc = '<p style="color:red;">Failed to load</p>'; });
+                    }
+                }
+
+                // Load GLB model
+                if ((item.type === 'glb' || item.type === 'vrm') && typeof THREE !== 'undefined') {
+                    setTimeout(() => {
+                        const container = document.getElementById(`mobile-glb-container-${item.id}`);
+                        if (container) {
+                            loadMobileGLB(item.url, container);
+                        }
+                    }, 100);
+                }
+
+                // Show viewer
+                viewer.style.display = 'flex';
+                setTimeout(() => viewer.classList.add('visible'), 10);
+            }
+
+            // Close app viewer
+            function closeMobileAppViewer() {
+                const viewer = document.getElementById('mobile-app-viewer');
+                if (!viewer) return;
+
+                viewer.classList.remove('visible');
+                setTimeout(() => {
+                    viewer.style.display = 'none';
+                    // Clean up media
+                    const mediaArea = document.getElementById('mobile-app-media-area');
+                    if (mediaArea) mediaArea.innerHTML = '';
+                }, 250);
+            }
+
+            // Load GLB model for mobile
+            function loadMobileGLB(url, container) {
+                try {
+                    if (!container) {
+                        console.warn('GLB container not found');
+                        return;
+                    }
+                    if (typeof THREE === 'undefined') {
+                        container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">3D viewer not available</p>';
+                        return;
+                    }
+                    if (!THREE.GLTFLoader) {
+                        container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">GLTFLoader not loaded</p>';
+                        return;
+                    }
+                    if (!THREE.OrbitControls) {
+                        container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">OrbitControls not loaded</p>';
+                        return;
+                    }
+
+                    // Wait for container to have dimensions
+                    const containerWidth = container.clientWidth || 300;
+                    const containerHeight = container.clientHeight || 300;
+
+                    const scene = new THREE.Scene();
+                    scene.background = new THREE.Color(0x1a1a2e);
+
+                    const camera = new THREE.PerspectiveCamera(45, containerWidth / containerHeight, 0.1, 1000);
+                    camera.position.set(0, 1, 3);
+
+                    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                    renderer.setSize(containerWidth, containerHeight);
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                    container.appendChild(renderer.domElement);
+
+                    // Lights
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                    scene.add(ambientLight);
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                    directionalLight.position.set(5, 10, 7.5);
+                    scene.add(directionalLight);
+
+                    // Controls
+                    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.05;
+                    controls.target.set(0, 0.8, 0);
+
+                    // Load model
+                    const loader = new THREE.GLTFLoader();
+                    loader.load(
+                        url,
+                        (gltf) => {
+                            const model = gltf.scene;
+                            const box = new THREE.Box3().setFromObject(model);
+                            const center = box.getCenter(new THREE.Vector3());
+                            model.position.sub(center);
+                            const size = box.getSize(new THREE.Vector3());
+                            const maxDim = Math.max(size.x, size.y, size.z);
+                            const scale = 2 / maxDim;
+                            model.scale.setScalar(scale);
+                            scene.add(model);
+                        },
+                        (progress) => {
+                            // Progress callback
+                        },
+                        (error) => {
+                            console.error('GLB load error:', error);
+                            container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">Failed to load 3D model</p>';
+                        }
+                    );
+
+                    // Animation loop
+                    let animationId;
+                    function animate() {
+                        const viewer = document.getElementById('mobile-app-viewer');
+                        if (!viewer || !viewer.classList.contains('visible')) {
+                            cancelAnimationFrame(animationId);
+                            return;
+                        }
+                        animationId = requestAnimationFrame(animate);
+                        controls.update();
+                        renderer.render(scene, camera);
+                    }
+                    animate();
+
+                } catch (error) {
+                    console.error('Mobile GLB viewer error:', error);
+                    if (container) {
+                        container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">Error loading 3D viewer</p>';
+                    }
+                }
+            }
+
+            // Swipe handling for main pages
+            function setupMobileSwipe() {
+                const pagesContainer = document.getElementById('mobile-pages-container');
+                if (!pagesContainer) return;
+
+                let startX = 0;
+                let startY = 0;
+                let isDragging = false;
+
+                pagesContainer.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                }, { passive: true });
+
+                pagesContainer.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                }, { passive: true });
+
+                pagesContainer.addEventListener('touchend', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const diffX = startX - endX;
+                    const diffY = startY - endY;
+
+                    // Only horizontal swipes
+                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                        if (diffX > 0 && mobileCurrentPage < mobileTotalPages - 1) {
+                            mobileCurrentPage++;
+                            updateMobilePagePosition();
+                        } else if (diffX < 0 && mobileCurrentPage > 0) {
+                            mobileCurrentPage--;
+                            updateMobilePagePosition();
+                        }
+                    }
+                }, { passive: true });
+
+                // Mouse support for desktop in narrow mode
+                pagesContainer.addEventListener('mousedown', (e) => {
+                    startX = e.clientX;
+                    isDragging = true;
+                });
+
+                document.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const diffX = startX - e.clientX;
+                    if (Math.abs(diffX) > 50) {
+                        if (diffX > 0 && mobileCurrentPage < mobileTotalPages - 1) {
+                            mobileCurrentPage++;
+                            updateMobilePagePosition();
+                        } else if (diffX < 0 && mobileCurrentPage > 0) {
+                            mobileCurrentPage--;
+                            updateMobilePagePosition();
+                        }
+                    }
+                });
+            }
+
+            // Swipe for folder pages (touch + mouse)
+            let folderSwipeStartX = 0;
+            let folderSwipeCurrentX = 0;
+            let folderSwipeIsDragging = false;
+
+            function setupMobileFolderSwipe() {
+                const pagesWrapper = document.getElementById('mobile-folder-pages-wrapper');
+                const folderContainer = document.getElementById('mobile-folder-container');
+                if (!pagesWrapper || !folderContainer) return;
+
+                // Touch events
+                folderContainer.addEventListener('touchstart', (e) => {
+                    folderSwipeStartX = e.touches[0].clientX;
+                    folderSwipeCurrentX = folderSwipeStartX;
+                    folderSwipeIsDragging = true;
+                }, { passive: true });
+
+                folderContainer.addEventListener('touchmove', (e) => {
+                    if (!folderSwipeIsDragging) return;
+                    folderSwipeCurrentX = e.touches[0].clientX;
+                }, { passive: true });
+
+                folderContainer.addEventListener('touchend', (e) => {
+                    if (!folderSwipeIsDragging) return;
+                    folderSwipeIsDragging = false;
+
+                    const diffX = folderSwipeStartX - folderSwipeCurrentX;
+
+                    if (Math.abs(diffX) > 40) {
+                        if (diffX > 0 && mobileFolderCurrentPage < mobileFolderTotalPages - 1) {
+                            mobileFolderCurrentPage++;
+                        } else if (diffX < 0 && mobileFolderCurrentPage > 0) {
+                            mobileFolderCurrentPage--;
+                        }
+                        updateMobileFolderPagePosition();
+                    }
+                }, { passive: true });
+
+                // Mouse events - attach to folder container for better capture
+                folderContainer.addEventListener('mousedown', (e) => {
+                    if (e.target.closest('.mobile-folder-icon')) return; // Don't start drag on icons
+                    folderSwipeStartX = e.clientX;
+                    folderSwipeCurrentX = folderSwipeStartX;
+                    folderSwipeIsDragging = true;
+                    folderContainer.style.cursor = 'grabbing';
+                });
+
+                folderContainer.addEventListener('mousemove', (e) => {
+                    if (!folderSwipeIsDragging) return;
+                    folderSwipeCurrentX = e.clientX;
+                });
+
+                folderContainer.addEventListener('mouseup', (e) => {
+                    if (!folderSwipeIsDragging) return;
+                    folderSwipeIsDragging = false;
+                    folderContainer.style.cursor = '';
+
+                    const diffX = folderSwipeStartX - folderSwipeCurrentX;
+
+                    if (Math.abs(diffX) > 40) {
+                        if (diffX > 0 && mobileFolderCurrentPage < mobileFolderTotalPages - 1) {
+                            mobileFolderCurrentPage++;
+                        } else if (diffX < 0 && mobileFolderCurrentPage > 0) {
+                            mobileFolderCurrentPage--;
+                        }
+                        updateMobileFolderPagePosition();
+                    }
+                });
+
+                folderContainer.addEventListener('mouseleave', () => {
+                    if (folderSwipeIsDragging) {
+                        folderSwipeIsDragging = false;
+                        folderContainer.style.cursor = '';
+                    }
+                });
+            }
+
+            function updateMobileFolderPagePosition() {
+                const pagesContainer = document.getElementById('mobile-folder-pages');
+                const dots = document.querySelectorAll('#mobile-folder-dots .mobile-folder-dot');
+
+                if (pagesContainer) {
+                    pagesContainer.style.transform = `translateX(-${mobileFolderCurrentPage * 100}%)`;
+                }
+
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === mobileFolderCurrentPage);
+                });
+            }
+
+            // Swipe down to close app viewer (touch + mouse)
+            function setupMobileAppViewerSwipe() {
+                const viewer = document.getElementById('mobile-app-viewer');
+                if (!viewer) return;
+
+                let startY = 0;
+                let currentY = 0;
+                let isDragging = false;
+
+                // Touch events
+                viewer.addEventListener('touchstart', (e) => {
+                    if (e.target.closest('#mobile-app-info-area') || e.target.closest('#mobile-app-swipe-indicator')) {
+                        startY = e.touches[0].clientY;
+                        currentY = startY;
+                        isDragging = true;
+                    }
+                }, { passive: true });
+
+                viewer.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    currentY = e.touches[0].clientY;
+                    const diff = currentY - startY;
+
+                    if (diff > 0) {
+                        viewer.style.transform = `translateY(${diff}px)`;
+                    }
+                }, { passive: true });
+
+                viewer.addEventListener('touchend', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const diff = currentY - startY;
+
+                    if (diff > 100) {
+                        closeMobileAppViewer();
+                    } else {
+                        viewer.style.transform = 'translateY(0)';
+                    }
+                }, { passive: true });
+
+                // Mouse events
+                viewer.addEventListener('mousedown', (e) => {
+                    if (e.target.closest('#mobile-app-info-area') || e.target.closest('#mobile-app-swipe-indicator')) {
+                        startY = e.clientY;
+                        currentY = startY;
+                        isDragging = true;
+                        e.preventDefault();
+                    }
+                });
+
+                viewer.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    currentY = e.clientY;
+                    const diff = currentY - startY;
+
+                    if (diff > 0) {
+                        viewer.style.transform = `translateY(${diff}px)`;
+                    }
+                });
+
+                viewer.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const diff = currentY - startY;
+
+                    if (diff > 100) {
+                        closeMobileAppViewer();
+                    } else {
+                        viewer.style.transform = 'translateY(0)';
+                    }
+                });
+
+                viewer.addEventListener('mouseleave', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        viewer.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+
+            // Close button and overlay click handlers
+            function setupMobileEventListeners() {
+                // Close folder when clicking outside
+                const folderOverlay = document.getElementById('mobile-folder-overlay');
+                if (folderOverlay) {
+                    folderOverlay.addEventListener('click', (e) => {
+                        if (e.target === folderOverlay) {
+                            closeMobileFolder();
+                        }
+                    });
+                }
+
+                // Close app viewer button
+                const closeBtn = document.getElementById('mobile-app-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeMobileAppViewer);
+                }
+
+                // Update time
+                function updateMobileTime() {
+                    const timeEl = document.getElementById('mobile-time');
+                    if (timeEl) {
+                        const now = new Date();
+                        timeEl.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: false });
+                    }
+                }
+                updateMobileTime();
+                setInterval(updateMobileTime, 60000);
+            }
+
+            // Initialize mobile interface
+            function initMobileInterface() {
+                renderMobileDock();
+                renderMobileMainGrid();
+                setupMobileSwipe();
+                setupMobileFolderSwipe();
+                setupMobileAppViewerSwipe();
+                setupMobileEventListeners();
+            }
+
+            // Initialize on load
+            initMobileInterface();
+
+            // ============================================= //
+            // ======== END MOBILE INTERFACE LOGIC ======== //
+            // ============================================= //
         });
     </script>
 </body>
