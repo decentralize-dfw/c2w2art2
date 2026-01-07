@@ -245,9 +245,11 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(6, 1fr);
-            gap: 3%;
-            padding: 2%;
+            gap: 2% 3%;
+            padding: 1% 3%;
             box-sizing: border-box;
+            align-items: start;
+            justify-items: center;
         }
 
         /* App Icon */
@@ -259,12 +261,20 @@
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            padding: 2%;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .mobile-app-icon-image {
-            width: 100%;
-            aspect-ratio: 1;
+            /* Icon size: calculate based on viewport width to ensure 4 fit with gaps */
+            /* (100vw - padding - gaps) / 4, but use min of width/height based */
+            width: calc((100vw - 10%) / 5);
+            height: calc((100vw - 10%) / 5);
+            max-width: 70px;
+            max-height: 70px;
+            min-width: 40px;
+            min-height: 40px;
             border-radius: 22%;
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
@@ -274,6 +284,7 @@
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: transform 0.15s ease;
+            flex-shrink: 0;
         }
 
         .mobile-app-icon-image:active {
@@ -289,11 +300,12 @@
         .mobile-app-icon-image svg {
             width: 50%;
             height: 50%;
+            flex-shrink: 0;
         }
 
         .mobile-app-icon-name {
-            margin-top: 6%;
-            font-size: clamp(8px, 2.2vw, 11px);
+            margin-top: 4px;
+            font-size: clamp(8px, 2vw, 10px);
             color: white;
             text-align: center;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
@@ -301,7 +313,9 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             width: 100%;
+            max-width: calc((100vw - 10%) / 5);
             font-weight: 500;
+            line-height: 1.2;
         }
 
         /* Page Dots */
@@ -330,24 +344,27 @@
         /* Bottom Dock */
         #mobile-dock {
             height: 12%;
-            min-height: 80px;
-            padding: 2% 4% 4%;
+            min-height: 70px;
+            max-height: 100px;
+            padding: 1% 3% 3%;
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
         #mobile-dock-container {
             background: rgba(255,255,255,0.25);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 2% 3%;
+            border-radius: 28px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            width: 95%;
-            max-width: 400px;
+            justify-content: space-evenly;
+            width: 92%;
+            max-width: 380px;
             box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+            gap: 4px;
         }
 
         .mobile-dock-icon {
@@ -357,14 +374,18 @@
             justify-content: center;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            padding: 4%;
             flex: 1;
             max-width: 20%;
         }
 
         .mobile-dock-icon-image {
-            width: clamp(40px, 12vw, 60px);
-            aspect-ratio: 1;
+            /* Fixed size for all dock icons */
+            width: calc((100vw - 15%) / 6);
+            height: calc((100vw - 15%) / 6);
+            max-width: 52px;
+            max-height: 52px;
+            min-width: 36px;
+            min-height: 36px;
             border-radius: 22%;
             background: rgba(255,255,255,0.3);
             backdrop-filter: blur(5px);
@@ -374,6 +395,7 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.15s ease;
+            flex-shrink: 0;
         }
 
         .mobile-dock-icon-image:active {
@@ -383,10 +405,11 @@
         .mobile-dock-icon-image svg {
             width: 55%;
             height: 55%;
+            flex-shrink: 0;
         }
 
         .mobile-dock-icon-name {
-            margin-top: 4px;
+            margin-top: 3px;
             font-size: clamp(7px, 1.8vw, 9px);
             color: white;
             text-align: center;
@@ -465,8 +488,11 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 8%;
-            padding: 2%;
+            gap: 6%;
+            padding: 3%;
+            box-sizing: border-box;
+            align-items: start;
+            justify-items: center;
         }
 
         .mobile-folder-icon {
@@ -475,12 +501,17 @@
             align-items: center;
             justify-content: flex-start;
             cursor: pointer;
-            padding: 4%;
+            width: 100%;
         }
 
         .mobile-folder-icon-image {
-            width: 100%;
-            aspect-ratio: 1;
+            /* Fixed size for folder icons - all equal */
+            width: calc((85vw - 20%) / 4);
+            height: calc((85vw - 20%) / 4);
+            max-width: 60px;
+            max-height: 60px;
+            min-width: 40px;
+            min-height: 40px;
             border-radius: 22%;
             background: rgba(200,200,200,0.3);
             display: flex;
@@ -488,6 +519,7 @@
             justify-content: center;
             overflow: hidden;
             transition: transform 0.15s ease;
+            flex-shrink: 0;
         }
 
         .mobile-folder-icon-image:active {
@@ -503,10 +535,11 @@
         .mobile-folder-icon-image svg {
             width: 50%;
             height: 50%;
+            flex-shrink: 0;
         }
 
         .mobile-folder-icon-name {
-            margin-top: 8%;
+            margin-top: 4px;
             font-size: clamp(8px, 2vw, 10px);
             color: #333;
             text-align: center;
@@ -514,6 +547,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             width: 100%;
+            max-width: calc((85vw - 20%) / 4);
         }
 
         #mobile-folder-dots {
@@ -7615,7 +7649,7 @@ if (thumbnailsEl) {
                 });
             }
 
-            // Swipe for folder pages
+            // Swipe for folder pages (touch + mouse)
             function setupMobileFolderSwipe() {
                 const pagesWrapper = document.getElementById('mobile-folder-pages-wrapper');
                 if (!pagesWrapper) return;
@@ -7623,6 +7657,7 @@ if (thumbnailsEl) {
                 let startX = 0;
                 let isDragging = false;
 
+                // Touch events
                 pagesWrapper.addEventListener('touchstart', (e) => {
                     startX = e.touches[0].clientX;
                     isDragging = true;
@@ -7644,6 +7679,33 @@ if (thumbnailsEl) {
                         updateMobileFolderPagePosition();
                     }
                 }, { passive: true });
+
+                // Mouse events
+                pagesWrapper.addEventListener('mousedown', (e) => {
+                    startX = e.clientX;
+                    isDragging = true;
+                    e.preventDefault();
+                });
+
+                pagesWrapper.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const diffX = startX - e.clientX;
+
+                    if (Math.abs(diffX) > 50) {
+                        if (diffX > 0 && mobileFolderCurrentPage < mobileFolderTotalPages - 1) {
+                            mobileFolderCurrentPage++;
+                        } else if (diffX < 0 && mobileFolderCurrentPage > 0) {
+                            mobileFolderCurrentPage--;
+                        }
+                        updateMobileFolderPagePosition();
+                    }
+                });
+
+                pagesWrapper.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                });
             }
 
             function updateMobileFolderPagePosition() {
@@ -7659,7 +7721,7 @@ if (thumbnailsEl) {
                 });
             }
 
-            // Swipe up to close app viewer
+            // Swipe down to close app viewer (touch + mouse)
             function setupMobileAppViewerSwipe() {
                 const viewer = document.getElementById('mobile-app-viewer');
                 if (!viewer) return;
@@ -7668,10 +7730,11 @@ if (thumbnailsEl) {
                 let currentY = 0;
                 let isDragging = false;
 
+                // Touch events
                 viewer.addEventListener('touchstart', (e) => {
-                    // Only start swipe from info area
                     if (e.target.closest('#mobile-app-info-area') || e.target.closest('#mobile-app-swipe-indicator')) {
                         startY = e.touches[0].clientY;
+                        currentY = startY;
                         isDragging = true;
                     }
                 }, { passive: true });
@@ -7681,7 +7744,6 @@ if (thumbnailsEl) {
                     currentY = e.touches[0].clientY;
                     const diff = currentY - startY;
 
-                    // Only allow downward swipe (to close)
                     if (diff > 0) {
                         viewer.style.transform = `translateY(${diff}px)`;
                     }
@@ -7699,6 +7761,46 @@ if (thumbnailsEl) {
                         viewer.style.transform = 'translateY(0)';
                     }
                 }, { passive: true });
+
+                // Mouse events
+                viewer.addEventListener('mousedown', (e) => {
+                    if (e.target.closest('#mobile-app-info-area') || e.target.closest('#mobile-app-swipe-indicator')) {
+                        startY = e.clientY;
+                        currentY = startY;
+                        isDragging = true;
+                        e.preventDefault();
+                    }
+                });
+
+                viewer.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    currentY = e.clientY;
+                    const diff = currentY - startY;
+
+                    if (diff > 0) {
+                        viewer.style.transform = `translateY(${diff}px)`;
+                    }
+                });
+
+                viewer.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const diff = currentY - startY;
+
+                    if (diff > 100) {
+                        closeMobileAppViewer();
+                    } else {
+                        viewer.style.transform = 'translateY(0)';
+                    }
+                });
+
+                viewer.addEventListener('mouseleave', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        viewer.style.transform = 'translateY(0)';
+                    }
+                });
             }
 
             // Close button and overlay click handlers
