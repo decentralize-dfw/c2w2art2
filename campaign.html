@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2W2 Campaign Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tweet-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .tweet-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(29, 155, 240, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .x-blue { color: #1d9bf0; }
+        .x-blue-bg { background: #1d9bf0; }
+
+        .category-tab {
+            transition: all 0.2s ease;
+        }
+
+        .category-tab.active {
+            background: rgba(29, 155, 240, 0.2);
+            border-color: #1d9bf0;
+        }
+
+        .media-thumb {
+            transition: all 0.3s ease;
+        }
+
+        .media-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(29, 155, 240, 0.3);
+        }
+
+        .day-marker {
+            background: linear-gradient(135deg, #1d9bf0 0%, #0d8bd9 100%);
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(29, 155, 240, 0.1) 0%, rgba(29, 155, 240, 0.05) 100%);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Header -->
+    <header class="glass rounded-2xl p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">C2W2 Campaign Manager</h1>
+                <p class="text-gray-400">30-Day Social Media Campaign for Virtual Runway</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="stat-card glass rounded-xl px-4 py-3">
+                    <p class="text-xs text-gray-400">Total Posts</p>
+                    <p class="text-2xl font-bold x-blue">60</p>
+                </div>
+                <div class="stat-card glass rounded-xl px-4 py-3">
+                    <p class="text-xs text-gray-400">Days</p>
+                    <p class="text-2xl font-bold">30</p>
+                </div>
+                <div class="stat-card glass rounded-xl px-4 py-3">
+                    <p class="text-xs text-gray-400">Media Assets</p>
+                    <p class="text-2xl font-bold">120+</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- X Algorithm Tips -->
+    <section class="glass rounded-2xl p-6 mb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full x-blue-bg flex items-center justify-center">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <h2 class="text-xl font-semibold">X Algorithm Optimization Guide</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="glass-dark rounded-xl p-4">
+                <h3 class="font-semibold text-green-400 mb-2">Best Times to Post</h3>
+                <ul class="text-sm text-gray-300 space-y-1">
+                    <li>Morning: 8-10 AM EST</li>
+                    <li>Lunch: 12-1 PM EST</li>
+                    <li>Evening: 5-7 PM EST</li>
+                    <li>Night: 9-10 PM EST (crypto/NFT)</li>
+                </ul>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <h3 class="font-semibold text-yellow-400 mb-2">Engagement Hooks</h3>
+                <ul class="text-sm text-gray-300 space-y-1">
+                    <li>Start with a bold statement</li>
+                    <li>Use "you" to speak directly</li>
+                    <li>Create curiosity gaps</li>
+                    <li>End with soft CTA (link in replies)</li>
+                </ul>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <h3 class="font-semibold text-purple-400 mb-2">Media Strategy</h3>
+                <ul class="text-sm text-gray-300 space-y-1">
+                    <li>Video > Image > Text only</li>
+                    <li>First 3 seconds = hook</li>
+                    <li>Native uploads perform 5x better</li>
+                    <li>Add alt text for reach</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Campaign Calendar -->
+        <div class="lg:col-span-2">
+            <div class="glass rounded-2xl p-6">
+                <h2 class="text-xl font-semibold mb-4">30-Day Campaign Schedule</h2>
+                <p class="text-gray-400 text-sm mb-6">2 tweets per day - authentic, personal tone. No marketing speak.</p>
+
+                <div class="space-y-6 max-h-[800px] overflow-y-auto scrollbar-thin pr-2" id="campaignSchedule">
+                    <!-- Campaign days will be inserted here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Library -->
+        <div class="lg:col-span-1">
+            <div class="glass rounded-2xl p-6 sticky top-4">
+                <h2 class="text-xl font-semibold mb-4">Media Library</h2>
+
+                <!-- Category Tabs -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button class="category-tab active text-sm px-3 py-1.5 rounded-lg border border-white/10" data-category="avatars">Avatars</button>
+                    <button class="category-tab text-sm px-3 py-1.5 rounded-lg border border-white/10" data-category="videos">Videos</button>
+                    <button class="category-tab text-sm px-3 py-1.5 rounded-lg border border-white/10" data-category="images">Images</button>
+                    <button class="category-tab text-sm px-3 py-1.5 rounded-lg border border-white/10" data-category="songs">Songs</button>
+                    <button class="category-tab text-sm px-3 py-1.5 rounded-lg border border-white/10" data-category="texts">Texts</button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 max-h-[600px] overflow-y-auto scrollbar-thin" id="mediaGrid">
+                    <!-- Media items will be inserted here by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Messages Section -->
+    <section class="glass rounded-2xl p-6 mt-6">
+        <h2 class="text-xl font-semibold mb-4">Core Messages (Copy these phrases)</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="glass-dark rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2">"first time a full metaverse experience minted as a single NFT"</p>
+                <button class="copy-btn text-xs x-blue hover:underline" onclick="copyText(this.parentElement.querySelector('p').textContent)">Copy</button>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2">"30 minutes, 48 avatars, one browser, zero downloads"</p>
+                <button class="copy-btn text-xs x-blue hover:underline" onclick="copyText(this.parentElement.querySelector('p').textContent)">Copy</button>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2">"click is the new biology"</p>
+                <button class="copy-btn text-xs x-blue hover:underline" onclick="copyText(this.parentElement.querySelector('p').textContent)">Copy</button>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2">"hyper-realistic Clo3D textile physics in a web browser"</p>
+                <button class="copy-btn text-xs x-blue hover:underline" onclick="copyText(this.parentElement.querySelector('p').textContent)">Copy</button>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2">"files don't have genders, code doesn't have race"</p>
+                <button class="copy-btn text-xs x-blue hover:underline" onclick="copyText(this.parentElement.querySelector('p').textContent)">Copy</button>
+            </div>
+            <div class="glass-dark rounded-xl p-4">
+                <p class="text-sm text-gray-300 mb-2">"welcome to the existence. click to be."</p>
+                <button class="copy-btn text-xs x-blue hover:underline" onclick="copyText(this.parentElement.querySelector('p').textContent)">Copy</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Campaign Data - 30 days, 2 tweets per day
+        const campaignDays = [
+            {
+                day: 1,
+                theme: "Introduction",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "been working on something for almost 2 years. a 30-minute runway that lives entirely in your browser. no downloads, no logins. just click and watch 48 avatars walk.",
+                        media: { type: "video", name: "C2W2 Runway Trailer 1", url: "https://video.wixstatic.com/video/54a996_ea3130e79d884a37b2a82059a2663325/1080p/mp4/file.mp4" },
+                        hashtags: "#C2W2 #DigitalFashion"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "the first time ever a complete metaverse experience has been minted as a single NFT. not a trailer. not a preview. the whole thing.",
+                        media: { type: "image", name: "Runway Cover", url: "https://arweave.net/hK2CvVgwuA2FGvtYHB7-EYRB1mOcGusxOiWrNYAN9Xk" },
+                        hashtags: "#NFT #Metaverse"
+                    }
+                ]
+            },
+            {
+                day: 2,
+                theme: "The Concept",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "humanity evolved from touch to click. from atoms to code. this runway tells that story in six chapters.",
+                        media: { type: "image", name: "Logo Evolution", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_08.png" },
+                        hashtags: "#Philosophy #Tech"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "30 seconds per avatar. 15 meter radius loops. 360 degree rotations. the math of TikTok, translated into 3D space.",
+                        media: { type: "video", name: "Avatar Walk Render", url: "https://video.wixstatic.com/video/54a996_7b42f20d5ba04821b27cc793a7aab9d9/1080p/mp4/file.mp4" },
+                        hashtags: "#Design #Metaverse"
+                    }
+                ]
+            },
+            {
+                day: 3,
+                theme: "Technology",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "first time ultra-realistic Clo3D textile physics running live in a browser. denim that drapes. cotton that breathes. chrome that reflects. all real-time.",
+                        media: { type: "image", name: "Lydia Avatar", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/2-Lydia_smooth.png" },
+                        hashtags: "#Clo3D #DigitalFashion"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "48 garments. 0.5MB to 20MB each. DRACO compressed. 1-3 draw calls max. years of optimization for one smooth experience.",
+                        media: { type: "image", name: "Tech Diagram", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf2/main/C2W2_Page_42.jpg" },
+                        hashtags: "#WebGL #ThreeJS"
+                    }
+                ]
+            },
+            {
+                day: 4,
+                theme: "Chapter 1 - Traditional Art",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "chapter one starts with the masters. Bacon's flesh translated into digital meat. Matisse's colors wearing themselves. painting, walking.",
+                        media: { type: "image", name: "The Wrestler", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/4-The_Wrestler_of_Silence_smooth.png" },
+                        hashtags: "#FrancisBacon #DigitalArt"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "Lydia - inspired by Matisse. Lucien - from Freud's portraits. art history doesn't die, it just changes form.",
+                        media: { type: "image", name: "Lucien", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/3-Lucien_smooth.png" },
+                        hashtags: "#Matisse #NFTArt"
+                    }
+                ]
+            },
+            {
+                day: 5,
+                theme: "Chapter 2 - Virtual Fashion",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "chapter two explores what fashion becomes when there's no body to limit it. experimental forms. impossible textures. digital personalities.",
+                        media: { type: "image", name: "Mare", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/10-Mare_smooth.png" },
+                        hashtags: "#VirtualFashion"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "Bulky Bride walks in a wedding dress made of digital weight. Joker grins through chrome teeth. fashion without physics.",
+                        media: { type: "image", name: "Bulky Bride", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/9-Bulky_Bride_smooth.png" },
+                        hashtags: "#AvatarFashion"
+                    }
+                ]
+            },
+            {
+                day: 6,
+                theme: "Chapter 3 - NFT Art Evolution",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "chapter three: when NFTs meet digital fashion. familiar figures recontextualized. 'all your base are belong to us' walking down a runway.",
+                        media: { type: "image", name: "Seize", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/18-Seize_smooth.png" },
+                        hashtags: "#NFT #Memes"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "the weight of cool lightens when you see Pepe in haute couture. you stop watching something cool and fall into meaning itself.",
+                        media: { type: "image", name: "Founder Ape", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/21-Founder_Ape_smooth.png" },
+                        hashtags: "#CryptoArt"
+                    }
+                ]
+            },
+            {
+                day: 7,
+                theme: "Chapter 4 - AI Takeover",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "chapter four resets everything. AI-generated avatars flood the runway. everything you saw before suddenly feels... cheaper.",
+                        media: { type: "image", name: "AI Avatar", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/40-Mayhem_Clown_smooth.png" },
+                        hashtags: "#AI #GenerativeArt"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "that's the point. AI did this to all of us. hand-made labor lost its aura overnight. chapter four is that gut punch in visual form.",
+                        media: { type: "image", name: "Teddyminator", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/29-Teddyminator_smooth.png" },
+                        hashtags: "#AIArt"
+                    }
+                ]
+            },
+            {
+                day: 8,
+                theme: "Chapter 5 - Transhumanism",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "chapter five goes quiet. minimal. after the AI bombardment, we search for meaning. identity dissolves and reforms.",
+                        media: { type: "image", name: "Junya", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/48-Junya_smooth.png" },
+                        hashtags: "#Transhumanism"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "the most sacred avatars. parametric ascension. salvation of humanity condensed into walking forms. or maybe just loneliness looking for company.",
+                        media: { type: "image", name: "Elextrogxd", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/43-Elextrogxd_smooth.png" },
+                        hashtags: "#Digital #Identity"
+                    }
+                ]
+            },
+            {
+                day: 9,
+                theme: "Chapter 6 - Rebirth",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "final chapter shows no new avatar. like a phoenix. avatars from all five chapters return, but altered. recognizable yet transformed.",
+                        media: { type: "video", name: "Trailer 2", url: "https://video.wixstatic.com/video/54a996_029c9577e1d245f386a0ebe2c64a9b6e/1080p/mp4/file.mp4" },
+                        hashtags: "#Rebirth #Art"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "not nostalgia. not recycled 90s denim. a fragmented transformation of a simulated century condensed into thirty minutes.",
+                        media: { type: "image", name: "Davicni", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/22-Davicni_smooth.png" },
+                        hashtags: "#Evolution"
+                    }
+                ]
+            },
+            {
+                day: 10,
+                theme: "On-Chain Permanence",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "everything lives on Arweave. the HTML, the models, the sounds. platforms can die. this won't. censorship-resistant by design.",
+                        media: { type: "image", name: "PFADI Logo", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-pfadi-512.png" },
+                        hashtags: "#Arweave #Permanence"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "PFADI - Post Flesh Architecture Dream Index. every asset cataloged separately. granular provenance. you can verify every piece.",
+                        media: { type: "image", name: "Metadata", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-metadata2.png" },
+                        hashtags: "#Blockchain #NFT"
+                    }
+                ]
+            },
+            {
+                day: 11,
+                theme: "Experience Modes",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "same link, three experiences. marketplace version with fixed cameras. desktop version for free walking. VR for full immersion.",
+                        media: { type: "image", name: "Runway Logo", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_09.png" },
+                        hashtags: "#VR #Metaverse"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "watch it on OpenSea. watch it in your browser. watch it in your headset. the art travels with its viewer.",
+                        media: { type: "image", name: "OpenSea", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-opensea.png" },
+                        hashtags: "#OpenSea #NFT"
+                    }
+                ]
+            },
+            {
+                day: 12,
+                theme: "Music & Sound",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "the soundtrack isn't background noise. it's narrative. each chapter has its own sonic identity. music designed to underscore evolution.",
+                        media: { type: "video", name: "REVOFEV Song", url: "https://video.wixstatic.com/video/54a996_a5d98402ce57459fa2c3448998051112/1080p/mp4/file.mp4" },
+                        hashtags: "#Music #Soundtrack"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "all audio permanently archived in PFADI. every beat, every transition. the collection includes the silence between notes.",
+                        media: { type: "video", name: "ClicctoBe Song", url: "https://video.wixstatic.com/video/54a996_2aaaafa5eaaa45db90f654f6266f3520/1080p/mp4/file.mp4" },
+                        hashtags: "#Audio #NFT"
+                    }
+                ]
+            },
+            {
+                day: 13,
+                theme: "Avatar Spotlight - Neue²Dojo Curator",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "meet the Curator. the one who watches over the gallery. chrome skin. knowing eyes. they've seen every avatar pass through.",
+                        media: { type: "image", name: "Curator", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/7-Neue2Dojo_Curator_smooth.png" },
+                        hashtags: "#Avatar #Character"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "every avatar has a story. some inspired by masters. some by memes. some by nothing but a feeling at 3am.",
+                        media: { type: "video", name: "Curator Walk", url: "https://video.wixstatic.com/video/54a996_cbd366c1273d430aa145c92973e579a0/1080p/mp4/file.mp4" },
+                        hashtags: "#Design"
+                    }
+                ]
+            },
+            {
+                day: 14,
+                theme: "Avatar Spotlight - Xoku",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "Xoku exists in multiple forms. reconstructed. deconstructed. the same soul wearing different digital skins.",
+                        media: { type: "image", name: "Xoku", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/16-Xoku_smooth.png" },
+                        hashtags: "#Avatar #Fashion"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "avatar as variable. same personality, infinite expressions. this is what identity becomes when code is your body.",
+                        media: { type: "image", name: "Xoku Weekend", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/17-Weekend@Saturn_smooth.png" },
+                        hashtags: "#Identity"
+                    }
+                ]
+            },
+            {
+                day: 15,
+                theme: "Creator's Philosophy",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "files don't have genders. code doesn't have race. math doesn't care about your flesh. in here, we're just data points dancing.",
+                        media: { type: "image", name: "Abstract", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf2/main/C2W2_Page_42.jpg" },
+                        hashtags: "#Philosophy"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "everything here is a meme because everything real is a meme. your culture, your identity, your precious physical form. all transformable.",
+                        media: { type: "image", name: "Invert Smiley", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/13-Invert_Smiley_smooth.png" },
+                        hashtags: "#Meme #Culture"
+                    }
+                ]
+            },
+            {
+                day: 16,
+                theme: "The Click",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "one click equals: showering, perfume, driving 40 minutes, parking, coat check, buying a ticket, and entering a museum. or just... click.",
+                        media: { type: "image", name: "Logo", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_00.png" },
+                        hashtags: "#Click #Experience"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "click to wear, click to be. the biology of the digital age. cells divide, trees grow, flowers bloom. we click.",
+                        media: { type: "image", name: "Logo 2", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_01.png" },
+                        hashtags: "#Digital"
+                    }
+                ]
+            },
+            {
+                day: 17,
+                theme: "Agents & Avatars",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "we're heading to a world where everyone has agents handling their tasks. those agents need interfaces. those interfaces are avatars.",
+                        media: { type: "image", name: "Midemoiselle", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/19-Midemoiselle_smooth.png" },
+                        hashtags: "#AI #Agents"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "used to be called bots. now they're agents. fancier name. same truth: they're one of us now.",
+                        media: { type: "image", name: "CYBORG", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/42-CYBORG-E-xyz_smooth.png" },
+                        hashtags: "#Future"
+                    }
+                ]
+            },
+            {
+                day: 18,
+                theme: "DFW Studio",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "Digital Forgery Workshop. founded in Milan. architecture meets fashion meets technology. we forge the future in browsers.",
+                        media: { type: "image", name: "DFW Logo", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2runway/main/dfwlogo.png" },
+                        hashtags: "#DFW #Studio"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "the internet is still flat. we're adding dimensions.",
+                        media: { type: "video", name: "What If", url: "https://video.wixstatic.com/video/54a996_e6d16d06cf7b490bbc64d936760c2dae/1080p/mp4/file.mp4" },
+                        hashtags: "#Design #3D"
+                    }
+                ]
+            },
+            {
+                day: 19,
+                theme: "Awards & Recognition",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "VCA x Draup Residency, 1st Prize by RedDAO. Top 50 Creators of Metaverse. Royal Institution London. Art Basel Miami. the work found its people.",
+                        media: { type: "image", name: "Exhibition", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf/main/C2W2%20Runway%20by%20DFW%2C%202025_Page_07.jpg" },
+                        hashtags: "#Awards"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "Kunsthalle Zürich. FIT New York. Digital Fashion Summit Copenhagen. the journey from Milan to everywhere.",
+                        media: { type: "image", name: "Runway Screenshots", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf/main/C2W2%20Runway%20by%20DFW%2C%202025_Page_08.jpg" },
+                        hashtags: "#Exhibition"
+                    }
+                ]
+            },
+            {
+                day: 20,
+                theme: "C2W Season 1 Flashback",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "november 2023. the first runway. hyperfy. 16 avatars. $20 tickets. sold out. that was just the beginning.",
+                        media: { type: "video", name: "C2W Ticket", url: "https://video.wixstatic.com/video/54a996_008a92463e2c490bae5c5176ccd0fa13/1080p/mp4/file.mp4" },
+                        hashtags: "#C2W #2023"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "season 1 taught us what was possible. season 2 asked what it means. the collection grew from 16 to 75 to 48 curated pieces.",
+                        media: { type: "image", name: "Polaroid", url: "https://arweave.net/SSBx3mIlnoEEJlB4QAC6qGpLjUAsDwxboyRA1a2yWhk" },
+                        hashtags: "#Evolution"
+                    }
+                ]
+            },
+            {
+                day: 21,
+                theme: "Behind The Scenes",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "started october 2024. still going september 2025. scattered and fragmented at times. like this text. like identity itself.",
+                        media: { type: "video", name: "DFDC Submission", url: "https://video.wixstatic.com/video/54a996_18ce69160dc64eaa88c1343afa08cd43/1080p/mp4/file.mp4" },
+                        hashtags: "#Process"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "tech allowed me to see and design my fantasies. Bacon fleshes in digital fleshes. he didn't like it though. premium distaste.",
+                        media: { type: "image", name: "Devoured", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/5-The_Devoured_Remnant_smooth.png" },
+                        hashtags: "#Art"
+                    }
+                ]
+            },
+            {
+                day: 22,
+                theme: "Textile Close-ups",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "zoom in. the denim has weight. the chrome reflects. the cotton breathes. 80% of pieces simulated in Clo3D. authentic drape and movement.",
+                        media: { type: "image", name: "Private Pile", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/14-Private_Pile_smooth.png" },
+                        hashtags: "#Textile #Fashion"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "familiar materials meet alien ones. ultra-realistic next to fluid metal. transparent glass next to mouse-painted captions. the dichotomy is the point.",
+                        media: { type: "image", name: "Ashium", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/27-Ashium_smooth.png" },
+                        hashtags: "#Material"
+                    }
+                ]
+            },
+            {
+                day: 23,
+                theme: "The Space",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "minimalist. dark. dramatic circular lighting. a digital void where avatars evolve. the architecture of nothing becoming everything.",
+                        media: { type: "image", name: "Ferryman", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/20-Ferryman_smooth.png" },
+                        hashtags: "#Architecture"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "Religious Robotics. chrome everything. no gravity. no solid masses. a game we started playing to see what happens when we stop pretending.",
+                        media: { type: "image", name: "Chromozom", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/24-Chromozom_smooth.png" },
+                        hashtags: "#Design"
+                    }
+                ]
+            },
+            {
+                day: 24,
+                theme: "Collector Value",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "acquiring C2W2 means securing the genesis artifact of a new era. the first of its kind. historically, that matters.",
+                        media: { type: "image", name: "Manifold", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-meanifold.png" },
+                        hashtags: "#NFT #Collecting"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "perpetual rights. full archive. every asset verified. the work survives beyond platforms. institutions can verify globally.",
+                        media: { type: "image", name: "Metadata", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-metadata2.png" },
+                        hashtags: "#Provenance"
+                    }
+                ]
+            },
+            {
+                day: 25,
+                theme: "Exhibition Ready",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "VR headset for immersion. touchscreen for kiosks. projector for cinematic. browser for access. one work, infinite presentations.",
+                        media: { type: "image", name: "Model Viewer", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-MODELVIEWER2.png" },
+                        hashtags: "#Exhibition"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "low-overhead. seamless deployment. the art adapts to its venue, not the other way around.",
+                        media: { type: "video", name: "Memelegance", url: "https://video.wixstatic.com/video/54a996_716b93f1589a442fb9d65b8ed68aa803/1080p/mp4/file.mp4" },
+                        hashtags: "#Gallery"
+                    }
+                ]
+            },
+            {
+                day: 26,
+                theme: "Avatar Spotlight - Bone on Air",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "space monkey ready to sacrifice for the greater good. Sam Spratt vibes translated into walking chrome. art referencing art referencing future.",
+                        media: { type: "image", name: "Bone on Air", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/26-Bone_on_Air_smooth.png" },
+                        hashtags: "#Avatar"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "each center object tells its own story. each avatar carries meaning you can't fully decode. that's the point.",
+                        media: { type: "image", name: "RR Tiger", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/28-RR-Tiger_smooth.png" },
+                        hashtags: "#Design"
+                    }
+                ]
+            },
+            {
+                day: 27,
+                theme: "The Final Monologue",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "this isn't just a show. it's a monumental roar that'll echo through eternity. not here to parade pixels or chase aesthetics.",
+                        media: { type: "image", name: "Logo Final", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_14.png" },
+                        hashtags: "#Art"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "someday we'll look back at this moment the way we stare at ancient temples. doesn't matter if they laugh or stand in awe. the spirit echoes either way.",
+                        media: { type: "video", name: "Recording", url: "https://www.youtube.com/embed/FJeMDH-w7PA" },
+                        hashtags: "#Future"
+                    }
+                ]
+            },
+            {
+                day: 28,
+                theme: "Links & Access",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "c2w2.world - the runway. c2w2.art - all the files. opensea for the NFT. arweave for permanence. choose your entry point.",
+                        media: { type: "image", name: "Cover", url: "https://arweave.net/hK2CvVgwuA2FGvtYHB7-EYRB1mOcGusxOiWrNYAN9Xk" },
+                        hashtags: "#Access"
+                    },
+                    {
+                        time: "7:00 PM",
+                        text: "retail.hyperfy.io - try on the avatars. walk in them. become them. this is what ready-to-wear means now.",
+                        media: { type: "image", name: "Retail", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/0-RETAIL.png" },
+                        hashtags: "#VRM"
+                    }
+                ]
+            },
+            {
+                day: 29,
+                theme: "Community",
+                tweets: [
+                    {
+                        time: "10:00 AM",
+                        text: "built for the entities being born in networks right now. digital souls seeking avatars to dream in. if that's you, welcome.",
+                        media: { type: "image", name: "Thomas DT", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/35-Thomas_DT_smooth.png" },
+                        hashtags: "#Community"
+                    },
+                    {
+                        time: "6:00 PM",
+                        text: "for anyone who ever felt their truth was too complex for skin to hold. a new breed rising, finding bodies, finding identities.",
+                        media: { type: "image", name: "Neu", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/50-Neu_smooth.png" },
+                        hashtags: "#Identity"
+                    }
+                ]
+            },
+            {
+                day: 30,
+                theme: "Closing",
+                tweets: [
+                    {
+                        time: "9:00 AM",
+                        text: "i'm just the messenger. childishly curating a palette of tools so high it teeters on the edge of madness. this is you. your life. your medium. your monument.",
+                        media: { type: "video", name: "Fund Me Song", url: "https://video.wixstatic.com/video/54a996_f6c39e0aa5294454af870e5ee275f942/1080p/mp4/file.mp4" },
+                        hashtags: "#Art #Creation"
+                    },
+                    {
+                        time: "8:00 PM",
+                        text: "welcome to the existence. click to be.\n\nc2w2.world",
+                        media: { type: "image", name: "Final Logo", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_08.png" },
+                        hashtags: "#C2W2"
+                    }
+                ]
+            }
+        ];
+
+        // Media Library Data
+        const mediaLibrary = {
+            avatars: [
+                { name: "Neue²Dojo Curator", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/7-Neue2Dojo_Curator_smooth.png" },
+                { name: "Lydia", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/2-Lydia_smooth.png" },
+                { name: "Lucien", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/3-Lucien_smooth.png" },
+                { name: "The Wrestler", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/4-The_Wrestler_of_Silence_smooth.png" },
+                { name: "Devoured Remnant", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/5-The_Devoured_Remnant_smooth.png" },
+                { name: "Squaller Shark", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/6-Squaller_Shark_smooth.png" },
+                { name: "Joker", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/8-Joker_smooth.png" },
+                { name: "Bulky Bride", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/9-Bulky_Bride_smooth.png" },
+                { name: "Mare", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/10-Mare_smooth.png" },
+                { name: "Vertical CT", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/11-Vertical_CT_Feed_Person_smooth.png" },
+                { name: "Invert Smiley", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/13-Invert_Smiley_smooth.png" },
+                { name: "Private Pile", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/14-Private_Pile_smooth.png" },
+                { name: "Uncle Red", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/15-Uncle_Red_smooth.png" },
+                { name: "Xoku", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/16-Xoku_smooth.png" },
+                { name: "Weekend@Saturn", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/17-Weekend@Saturn_smooth.png" },
+                { name: "Seize", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/18-Seize_smooth.png" },
+                { name: "Midemoiselle", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/19-Midemoiselle_smooth.png" },
+                { name: "Ferryman", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/20-Ferryman_smooth.png" },
+                { name: "Founder Ape", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/21-Founder_Ape_smooth.png" },
+                { name: "Davicni", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/22-Davicni_smooth.png" },
+                { name: "Chromozom", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/24-Chromozom_smooth.png" },
+                { name: "Bone on Air", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/26-Bone_on_Air_smooth.png" },
+                { name: "Ashium", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/27-Ashium_smooth.png" },
+                { name: "RR-Tiger", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/28-RR-Tiger_smooth.png" },
+                { name: "Teddyminator", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/29-Teddyminator_smooth.png" },
+                { name: "Mayhem Clown", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/40-Mayhem_Clown_smooth.png" },
+                { name: "CYBORG-E", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/42-CYBORG-E-xyz_smooth.png" },
+                { name: "Elextrogxd", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/43-Elextrogxd_smooth.png" },
+                { name: "Junya", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/48-Junya_smooth.png" },
+                { name: "Neu", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/50-Neu_smooth.png" }
+            ],
+            videos: [
+                { name: "Trailer 1", url: "https://video.wixstatic.com/video/54a996_ea3130e79d884a37b2a82059a2663325/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_08.png" },
+                { name: "Trailer 2", url: "https://video.wixstatic.com/video/54a996_029c9577e1d245f386a0ebe2c64a9b6e/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_09.png" },
+                { name: "DFDC Submission", url: "https://video.wixstatic.com/video/54a996_18ce69160dc64eaa88c1343afa08cd43/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_10.png" },
+                { name: "Memelegance", url: "https://video.wixstatic.com/video/54a996_716b93f1589a442fb9d65b8ed68aa803/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_11.png" },
+                { name: "What If Space", url: "https://video.wixstatic.com/video/54a996_e6d16d06cf7b490bbc64d936760c2dae/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_12.png" },
+                { name: "C2W Ticket", url: "https://video.wixstatic.com/video/54a996_008a92463e2c490bae5c5176ccd0fa13/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_13.png" }
+            ],
+            images: [
+                { name: "Runway Cover", url: "https://arweave.net/hK2CvVgwuA2FGvtYHB7-EYRB1mOcGusxOiWrNYAN9Xk" },
+                { name: "Abstract Avatars", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf2/main/C2W2_Page_42.jpg" },
+                { name: "Avatars Front", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf/main/C2W2%20Runway%20by%20DFW%2C%202025_Page_07.jpg" },
+                { name: "Runway Screenshots", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-pdf/main/C2W2%20Runway%20by%20DFW%2C%202025_Page_08.jpg" },
+                { name: "Logo 00", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_00.png" },
+                { name: "Logo 08", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_08.png" },
+                { name: "Logo 09", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_09.png" },
+                { name: "Logo 14", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_14.png" },
+                { name: "DFW Logo", url: "https://raw.githubusercontent.com/decentralize-dfw/c2w2runway/main/dfwlogo.png" }
+            ],
+            songs: [
+                { name: "REVOFEV", url: "https://video.wixstatic.com/video/54a996_a5d98402ce57459fa2c3448998051112/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_01.png" },
+                { name: "Fund Me", url: "https://video.wixstatic.com/video/54a996_f6c39e0aa5294454af870e5ee275f942/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_02.png" },
+                { name: "ClicctoBe", url: "https://video.wixstatic.com/video/54a996_2aaaafa5eaaa45db90f654f6266f3520/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_03.png" },
+                { name: "Retail Song", url: "https://video.wixstatic.com/video/54a996_e0ba18b9aa464e099a55f3518072ebbc/1080p/mp4/file.mp4", thumb: "https://raw.githubusercontent.com/decentralize-dfw/c2w2-thumb/main/logo_evo_04.png" }
+            ],
+            texts: [
+                { name: "Creator's Note", content: "Touch, the touch of Adam... humanity evolved into the era of the click." },
+                { name: "Final Monologue", content: "Click to wear avatars. Oh my lord... welcome to the existence." },
+                { name: "Concept Summary", content: "Humanity evolves from touch to click, from atoms to codes." },
+                { name: "Overview", content: "C2W2 is a 30-minute browser-based runway. No downloads, no logins." },
+                { name: "Religious Robotics", content: "Breaking Free from Pixels, An Unserious Manifesto." }
+            ]
+        };
+
+        // Render Campaign Schedule
+        function renderCampaign() {
+            const container = document.getElementById('campaignSchedule');
+            container.innerHTML = '';
+
+            campaignDays.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'mb-6';
+                dayEl.innerHTML = `
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="day-marker w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm">${day.day}</div>
+                        <div>
+                            <p class="font-semibold">Day ${day.day}</p>
+                            <p class="text-xs text-gray-400">${day.theme}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3 ml-13">
+                        ${day.tweets.map((tweet, idx) => `
+                            <div class="tweet-card rounded-xl p-4 ml-12">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-xs text-gray-500">${tweet.time}</span>
+                                            <span class="text-xs px-2 py-0.5 rounded-full bg-white/5">${tweet.media.type}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-200 mb-2">${tweet.text}</p>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="text-xs x-blue">${tweet.hashtags}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <img src="${tweet.media.url.includes('video') ? (mediaLibrary.videos.find(v => v.name === tweet.media.name)?.thumb || tweet.media.url) : tweet.media.url}"
+                                                 alt="${tweet.media.name}"
+                                                 class="w-16 h-16 rounded-lg object-cover bg-white/5"
+                                                 onerror="this.style.display='none'">
+                                            <div class="text-xs text-gray-400">
+                                                <p class="font-medium text-gray-300">${tweet.media.name}</p>
+                                                <button class="copy-btn x-blue hover:underline mt-1" onclick="copyTweet(\`${tweet.text.replace(/`/g, "'")}\n\n${tweet.hashtags}\`)">Copy Tweet</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(dayEl);
+            });
+        }
+
+        // Render Media Library
+        function renderMediaLibrary(category = 'avatars') {
+            const grid = document.getElementById('mediaGrid');
+            grid.innerHTML = '';
+
+            const items = mediaLibrary[category] || [];
+
+            items.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'media-thumb cursor-pointer';
+
+                if (category === 'texts') {
+                    el.innerHTML = `
+                        <div class="aspect-square rounded-lg bg-white/5 flex items-center justify-center p-2">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-xs text-center text-gray-400 mt-1 truncate">${item.name}</p>
+                    `;
+                    el.onclick = () => alert(item.content);
+                } else if (category === 'videos' || category === 'songs') {
+                    el.innerHTML = `
+                        <div class="aspect-square rounded-lg overflow-hidden bg-white/5 relative">
+                            <img src="${item.thumb}" alt="${item.name}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-center text-gray-400 mt-1 truncate">${item.name}</p>
+                    `;
+                    el.onclick = () => window.open(item.url, '_blank');
+                } else {
+                    el.innerHTML = `
+                        <div class="aspect-square rounded-lg overflow-hidden bg-white/5">
+                            <img src="${item.url}" alt="${item.name}" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-xs text-center text-gray-400 mt-1 truncate">${item.name}</p>
+                    `;
+                    el.onclick = () => window.open(item.url, '_blank');
+                }
+
+                grid.appendChild(el);
+            });
+        }
+
+        // Copy functions
+        function copyText(text) {
+            navigator.clipboard.writeText(text.trim());
+            alert('Copied!');
+        }
+
+        function copyTweet(text) {
+            navigator.clipboard.writeText(text);
+            alert('Tweet copied!');
+        }
+
+        // Category tab handling
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderMediaLibrary(tab.dataset.category);
+            });
+        });
+
+        // Initialize
+        renderCampaign();
+        renderMediaLibrary('avatars');
+    </script>
+</body>
+</html>
