@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>C2W2 Files</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -199,6 +199,12 @@
             z-index: 9999;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            /* iOS Safe Area support */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            box-sizing: border-box;
         }
 
         /* Status Bar */
@@ -308,23 +314,21 @@
 
         .mobile-app-icon-name {
             margin-top: 3px;
-            font-size: clamp(7px, 1.8vw, 10px);
+            font-size: clamp(8px, 2vw, 11px);
             color: white;
             text-align: center;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             width: var(--icon-size, 18vw);
             font-weight: 500;
-            line-height: 1.1;
+            line-height: 1.4;
+            padding-bottom: 2px;
         }
 
-        /* Page Dots */
+        /* Page Dots - Hidden */
         #mobile-page-dots {
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
+            display: none;
             align-items: center;
             gap: 6px;
             padding: 1% 0;
@@ -392,13 +396,21 @@
             border-radius: 22%;
             background: rgba(255,255,255,0.3);
             backdrop-filter: blur(5px);
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            border: 2px solid transparent;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.15s ease;
             flex-shrink: 0;
+        }
+
+        /* Active dock icon styling */
+        .mobile-dock-icon.active .mobile-dock-icon-image {
+            background: rgba(255,255,255,0.5);
+            border-color: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(255,255,255,0.4), 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .mobile-dock-icon-image:active {
@@ -554,11 +566,11 @@
             font-size: clamp(8px, 2vw, 10px);
             color: #333;
             text-align: center;
-            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             width: var(--folder-icon-size, 56px);
-            line-height: 1.1;
+            line-height: 1.4;
+            padding-bottom: 2px;
         }
 
         #mobile-folder-dots {
@@ -7221,10 +7233,11 @@ if (thumbnailsEl) {
                 { key: 'AirDrop', name: 'DFW', icon: 'bolt' }
             ];
 
-            let mobileCurrentPage = 0;
-            let mobileTotalPages = 1;
-            let mobileCurrentFolderKey = 'Cdrive';
-            let mobileAllItems = [];
+            // Global page tracking - all sections rendered side by side
+            let mobileGlobalPageIndex = 0; // Current global page index
+            let mobileGlobalPages = []; // Array of { sectionIndex, sectionKey, items }
+            let mobileTotalGlobalPages = 0;
+
             let mobileFolderCurrentPage = 0;
             let mobileFolderTotalPages = 1;
             let mobileCurrentFolderItems = [];
@@ -7267,6 +7280,35 @@ if (thumbnailsEl) {
                 return typeIcons[item.type] || '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-gray-400"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>';
             }
 
+            // Build global pages array from all sections
+            function buildMobileGlobalPages() {
+                mobileGlobalPages = [];
+                mobileDockFolders.forEach((folder, sectionIndex) => {
+                    const items = fileSystemDB[folder.key] || [];
+                    const pageCount = Math.max(1, Math.ceil(items.length / MOBILE_ITEMS_PER_PAGE));
+
+                    for (let pageIdx = 0; pageIdx < pageCount; pageIdx++) {
+                        const startIdx = pageIdx * MOBILE_ITEMS_PER_PAGE;
+                        const endIdx = Math.min(startIdx + MOBILE_ITEMS_PER_PAGE, items.length);
+                        mobileGlobalPages.push({
+                            sectionIndex: sectionIndex,
+                            sectionKey: folder.key,
+                            pageInSection: pageIdx,
+                            items: items.slice(startIdx, endIdx)
+                        });
+                    }
+                });
+                mobileTotalGlobalPages = mobileGlobalPages.length;
+            }
+
+            // Get current section index from global page
+            function getCurrentSectionIndex() {
+                if (mobileGlobalPages[mobileGlobalPageIndex]) {
+                    return mobileGlobalPages[mobileGlobalPageIndex].sectionIndex;
+                }
+                return 0;
+            }
+
             // Render mobile dock
             function renderMobileDock() {
                 const dockContainer = document.getElementById('mobile-dock-container');
@@ -7274,43 +7316,59 @@ if (thumbnailsEl) {
 
                 dockContainer.innerHTML = '';
 
-                mobileDockFolders.forEach(folder => {
+                mobileDockFolders.forEach((folder, index) => {
                     const dockIcon = document.createElement('div');
-                    dockIcon.className = 'mobile-dock-icon';
+                    const isActive = getCurrentSectionIndex() === index;
+                    dockIcon.className = 'mobile-dock-icon' + (isActive ? ' active' : '');
+                    dockIcon.dataset.sectionIndex = index;
                     dockIcon.innerHTML = `
                         <div class="mobile-dock-icon-image">${getMobileDockIconSVG(folder.icon)}</div>
                         <div class="mobile-dock-icon-name">${folder.name}</div>
                     `;
                     dockIcon.addEventListener('click', () => {
-                        mobileCurrentFolderKey = folder.key;
-                        mobileCurrentPage = 0;
-                        renderMobileMainGrid();
+                        goToSection(index);
                     });
                     dockContainer.appendChild(dockIcon);
                 });
             }
 
-            // Render main grid pages
+            // Go to first page of a section
+            function goToSection(sectionIndex) {
+                const pageIndex = mobileGlobalPages.findIndex(p => p.sectionIndex === sectionIndex);
+                if (pageIndex !== -1) {
+                    mobileGlobalPageIndex = pageIndex;
+                    updateMobilePagePosition();
+                    updateMobileDockActive();
+                }
+            }
+
+            // Update active dock item styling
+            function updateMobileDockActive() {
+                const currentSection = getCurrentSectionIndex();
+                const dockIcons = document.querySelectorAll('.mobile-dock-icon');
+                dockIcons.forEach(icon => {
+                    const sectionIdx = parseInt(icon.dataset.sectionIndex);
+                    icon.classList.toggle('active', sectionIdx === currentSection);
+                });
+            }
+
+            // Render ALL pages from ALL sections
             function renderMobileMainGrid() {
                 const pagesWrapper = document.getElementById('mobile-pages-wrapper');
-                const dotsContainer = document.getElementById('mobile-page-dots');
-                if (!pagesWrapper || !dotsContainer) return;
+                if (!pagesWrapper) return;
 
-                // Get all items from current folder
-                mobileAllItems = fileSystemDB[mobileCurrentFolderKey] || [];
-                mobileTotalPages = Math.max(1, Math.ceil(mobileAllItems.length / MOBILE_ITEMS_PER_PAGE));
+                // Build global pages
+                buildMobileGlobalPages();
 
-                // Render pages
+                // Render ALL pages
                 pagesWrapper.innerHTML = '';
-                for (let pageIndex = 0; pageIndex < mobileTotalPages; pageIndex++) {
+                mobileGlobalPages.forEach((page, globalIdx) => {
                     const pageEl = document.createElement('div');
                     pageEl.className = 'mobile-page';
+                    pageEl.dataset.globalIndex = globalIdx;
+                    pageEl.dataset.sectionIndex = page.sectionIndex;
 
-                    const startIdx = pageIndex * MOBILE_ITEMS_PER_PAGE;
-                    const endIdx = Math.min(startIdx + MOBILE_ITEMS_PER_PAGE, mobileAllItems.length);
-
-                    for (let i = startIdx; i < endIdx; i++) {
-                        const item = mobileAllItems[i];
+                    page.items.forEach(item => {
                         const iconEl = document.createElement('div');
                         iconEl.className = 'mobile-app-icon';
                         iconEl.innerHTML = `
@@ -7319,38 +7377,22 @@ if (thumbnailsEl) {
                         `;
                         iconEl.addEventListener('click', () => handleMobileItemClick(item));
                         pageEl.appendChild(iconEl);
-                    }
+                    });
 
                     pagesWrapper.appendChild(pageEl);
-                }
-
-                // Render dots
-                dotsContainer.innerHTML = '';
-                for (let i = 0; i < mobileTotalPages; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'mobile-page-dot' + (i === mobileCurrentPage ? ' active' : '');
-                    dot.addEventListener('click', () => {
-                        mobileCurrentPage = i;
-                        updateMobilePagePosition();
-                    });
-                    dotsContainer.appendChild(dot);
-                }
+                });
 
                 updateMobilePagePosition();
+                updateMobileDockActive();
             }
 
             // Update page position
             function updateMobilePagePosition() {
                 const pagesWrapper = document.getElementById('mobile-pages-wrapper');
-                const dots = document.querySelectorAll('#mobile-page-dots .mobile-page-dot');
 
                 if (pagesWrapper) {
-                    pagesWrapper.style.transform = `translateX(-${mobileCurrentPage * 100}%)`;
+                    pagesWrapper.style.transform = `translateX(-${mobileGlobalPageIndex * 100}%)`;
                 }
-
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === mobileCurrentPage);
-                });
             }
 
             // Handle item click
@@ -7416,6 +7458,9 @@ if (thumbnailsEl) {
                         dotsContainer.appendChild(dot);
                     }
                 }
+
+                // Reset page position to first page
+                pagesContainer.style.transform = 'translateX(0)';
 
                 // Show overlay
                 overlay.style.display = 'flex';
@@ -7491,7 +7536,9 @@ if (thumbnailsEl) {
                         mediaHTML = `<iframe id="mobile-html-iframe" sandbox="allow-scripts allow-same-origin"></iframe>`;
                         break;
                     case 'pdf':
-                        mediaHTML = `<iframe src="${item.url}"></iframe>`;
+                        // Use Google Docs viewer for PDF on mobile (iOS doesn't support direct PDF iframe)
+                        const encodedPdfUrl = encodeURIComponent(item.url);
+                        mediaHTML = `<iframe src="https://docs.google.com/viewer?url=${encodedPdfUrl}&embedded=true" style="border:none;background:white;border-radius:12px;"></iframe>`;
                         break;
                     case 'website':
                         mediaHTML = `<iframe src="${item.url}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`;
@@ -7526,7 +7573,9 @@ if (thumbnailsEl) {
                     }, 100);
                 }
 
-                // Show viewer
+                // Show viewer - always reset position first
+                viewer.style.transform = '';
+                viewer.style.transition = '';
                 viewer.style.display = 'flex';
                 setTimeout(() => viewer.classList.add('visible'), 10);
             }
@@ -7537,12 +7586,14 @@ if (thumbnailsEl) {
                 if (!viewer) return;
 
                 viewer.classList.remove('visible');
+                viewer.style.transform = 'translateY(100%)'; // Animate out
                 setTimeout(() => {
                     viewer.style.display = 'none';
+                    viewer.style.transform = ''; // Reset transform completely
                     // Clean up media
                     const mediaArea = document.getElementById('mobile-app-media-area');
                     if (mediaArea) mediaArea.innerHTML = '';
-                }, 250);
+                }, 300);
             }
 
             // Load GLB model for mobile
@@ -7565,71 +7616,119 @@ if (thumbnailsEl) {
                         return;
                     }
 
-                    // Wait for container to have dimensions
-                    const containerWidth = container.clientWidth || 300;
-                    const containerHeight = container.clientHeight || 300;
+                    // Show loading indicator
+                    container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;color:#fff;"><div class="mobile-glb-loading">Loading 3D model...</div><div class="mobile-glb-progress" style="width:60%;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:10px;overflow:hidden;"><div class="mobile-glb-progress-bar" style="width:0%;height:100%;background:#3b82f6;transition:width 0.3s;"></div></div></div>';
 
-                    const scene = new THREE.Scene();
-                    scene.background = new THREE.Color(0x1a1a2e);
+                    // Wait for container to have proper dimensions
+                    setTimeout(() => {
+                        const containerWidth = container.clientWidth || 300;
+                        const containerHeight = container.clientHeight || 300;
 
-                    const camera = new THREE.PerspectiveCamera(45, containerWidth / containerHeight, 0.1, 1000);
-                    camera.position.set(0, 1, 3);
+                        const scene = new THREE.Scene();
+                        // Transparent background to show popup's blurry dark background
+                        scene.background = null;
 
-                    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                    renderer.setSize(containerWidth, containerHeight);
-                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                    container.appendChild(renderer.domElement);
+                        const camera = new THREE.PerspectiveCamera(45, containerWidth / containerHeight, 0.01, 1000);
+                        camera.position.set(0, 1, 4);
 
-                    // Lights
-                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                    scene.add(ambientLight);
-                    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                    directionalLight.position.set(5, 10, 7.5);
-                    scene.add(directionalLight);
+                        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                        renderer.setSize(containerWidth, containerHeight);
+                        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                        renderer.outputEncoding = THREE.sRGBEncoding;
+                        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                        renderer.toneMappingExposure = 1.0;
 
-                    // Controls
-                    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-                    controls.enableDamping = true;
-                    controls.dampingFactor = 0.05;
-                    controls.target.set(0, 0.8, 0);
+                        // Clear loading and add canvas
+                        container.innerHTML = '';
+                        container.appendChild(renderer.domElement);
 
-                    // Load model
-                    const loader = new THREE.GLTFLoader();
-                    loader.load(
-                        url,
-                        (gltf) => {
-                            const model = gltf.scene;
-                            const box = new THREE.Box3().setFromObject(model);
-                            const center = box.getCenter(new THREE.Vector3());
-                            model.position.sub(center);
-                            const size = box.getSize(new THREE.Vector3());
-                            const maxDim = Math.max(size.x, size.y, size.z);
-                            const scale = 2 / maxDim;
-                            model.scale.setScalar(scale);
-                            scene.add(model);
-                        },
-                        (progress) => {
-                            // Progress callback
-                        },
-                        (error) => {
-                            console.error('GLB load error:', error);
-                            container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">Failed to load 3D model</p>';
-                        }
-                    );
+                        // Lights
+                        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                        scene.add(ambientLight);
+                        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                        directionalLight.position.set(5, 10, 7.5);
+                        scene.add(directionalLight);
+                        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+                        fillLight.position.set(-5, 0, -5);
+                        scene.add(fillLight);
 
-                    // Animation loop
-                    let animationId;
-                    function animate() {
-                        const viewer = document.getElementById('mobile-app-viewer');
-                        if (!viewer || !viewer.classList.contains('visible')) {
-                            cancelAnimationFrame(animationId);
-                            return;
-                        }
-                        animationId = requestAnimationFrame(animate);
+                        // Controls
+                        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                        controls.enableDamping = true;
+                        controls.dampingFactor = 0.05;
+                        controls.autoRotate = true;
+                        controls.autoRotateSpeed = 1.0;
+                        controls.target.set(0, 0.5, 0);
+                        controls.minPolarAngle = Math.PI / 4;
+                        controls.maxPolarAngle = Math.PI / 1.5;
                         controls.update();
-                        renderer.render(scene, camera);
-                    }
-                    animate();
+
+                        // Animation mixer for animated models
+                        let mixer = null;
+                        const clock = new THREE.Clock();
+
+                        // Setup loader with DRACO and Meshopt support
+                        const loader = new THREE.GLTFLoader();
+
+                        // Add DRACO decoder for compressed meshes
+                        if (THREE.DRACOLoader) {
+                            const dracoLoader = new THREE.DRACOLoader();
+                            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+                            loader.setDRACOLoader(dracoLoader);
+                        }
+
+                        // Add Meshopt decoder for optimized meshes
+                        if (typeof MeshoptDecoder !== 'undefined') {
+                            loader.setMeshoptDecoder(MeshoptDecoder);
+                        }
+
+                        loader.load(
+                            url,
+                            (gltf) => {
+                                const model = gltf.scene;
+                                const box = new THREE.Box3().setFromObject(model);
+                                const center = box.getCenter(new THREE.Vector3());
+                                model.position.x = -center.x;
+                                model.position.z = -center.z;
+                                model.position.y = -0.8;
+                                scene.add(model);
+
+                                // Handle animations
+                                if (gltf.animations && gltf.animations.length > 0) {
+                                    mixer = new THREE.AnimationMixer(model);
+                                    gltf.animations.forEach(clip => {
+                                        const action = mixer.clipAction(clip);
+                                        action.setLoop(THREE.LoopRepeat);
+                                        action.play();
+                                    });
+                                }
+                            },
+                            (progress) => {
+                                // Progress is available
+                            },
+                            (error) => {
+                                console.error('GLB load error:', error);
+                                container.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">Failed to load 3D model</p>';
+                            }
+                        );
+
+                        // Animation loop
+                        let animationId;
+                        function animate() {
+                            const viewer = document.getElementById('mobile-app-viewer');
+                            if (!viewer || !viewer.classList.contains('visible')) {
+                                cancelAnimationFrame(animationId);
+                                if (renderer) renderer.dispose();
+                                return;
+                            }
+                            animationId = requestAnimationFrame(animate);
+                            if (mixer) mixer.update(clock.getDelta());
+                            controls.update();
+                            renderer.render(scene, camera);
+                        }
+                        animate();
+
+                    }, 200); // Wait for container to render
 
                 } catch (error) {
                     console.error('Mobile GLB viewer error:', error);
@@ -7639,65 +7738,149 @@ if (thumbnailsEl) {
                 }
             }
 
-            // Swipe handling for main pages
+            // Swipe handling for main pages - smooth iPhone-like dragging with rubber-band
             function setupMobileSwipe() {
                 const pagesContainer = document.getElementById('mobile-pages-container');
-                if (!pagesContainer) return;
+                const pagesWrapper = document.getElementById('mobile-pages-wrapper');
+                if (!pagesContainer || !pagesWrapper) return;
 
                 let startX = 0;
                 let startY = 0;
+                let currentX = 0;
                 let isDragging = false;
+                let isHorizontalSwipe = null;
 
+                // Get current base offset in pixels
+                function getBaseOffset() {
+                    return mobileGlobalPageIndex * pagesContainer.clientWidth;
+                }
+
+                // Get max offset (last page)
+                function getMaxOffset() {
+                    return (mobileTotalGlobalPages - 1) * pagesContainer.clientWidth;
+                }
+
+                // Rubber-band effect for over-scroll
+                function applyRubberBand(offset) {
+                    const maxOffset = getMaxOffset();
+
+                    // At left edge (first page)
+                    if (offset < 0) {
+                        return offset * 0.3; // Rubber-band resistance
+                    }
+                    // At right edge (last page)
+                    if (offset > maxOffset) {
+                        const overscroll = offset - maxOffset;
+                        return maxOffset + (overscroll * 0.3); // Rubber-band resistance
+                    }
+                    return offset;
+                }
+
+                // Handle swipe completion
+                function handleSwipeEnd(diffX) {
+                    const threshold = pagesContainer.clientWidth * 0.15; // 15% threshold
+                    const prevSection = getCurrentSectionIndex();
+
+                    // Re-enable transition with spring effect
+                    pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+                    if (Math.abs(diffX) > threshold) {
+                        if (diffX > 0 && mobileGlobalPageIndex < mobileTotalGlobalPages - 1) {
+                            // Swipe left - go to next page
+                            mobileGlobalPageIndex++;
+                        } else if (diffX < 0 && mobileGlobalPageIndex > 0) {
+                            // Swipe right - go to previous page
+                            mobileGlobalPageIndex--;
+                        }
+                    }
+
+                    updateMobilePagePosition();
+
+                    // Update dock if section changed
+                    if (getCurrentSectionIndex() !== prevSection) {
+                        updateMobileDockActive();
+                    }
+                }
+
+                // Touch events
                 pagesContainer.addEventListener('touchstart', (e) => {
                     startX = e.touches[0].clientX;
                     startY = e.touches[0].clientY;
+                    currentX = startX;
                     isDragging = true;
+                    isHorizontalSwipe = null;
+                    // Disable transition during drag
+                    pagesWrapper.style.transition = 'none';
                 }, { passive: true });
 
                 pagesContainer.addEventListener('touchmove', (e) => {
                     if (!isDragging) return;
+
+                    currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    const diffX = startX - currentX;
+                    const diffY = startY - currentY;
+
+                    // Determine swipe direction on first significant move
+                    if (isHorizontalSwipe === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+                        isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+                    }
+
+                    // Only handle horizontal swipes
+                    if (isHorizontalSwipe) {
+                        const baseOffset = getBaseOffset();
+                        let dragOffset = baseOffset + diffX;
+                        dragOffset = applyRubberBand(dragOffset);
+                        pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
+                    }
                 }, { passive: true });
 
                 pagesContainer.addEventListener('touchend', (e) => {
                     if (!isDragging) return;
                     isDragging = false;
 
-                    const endX = e.changedTouches[0].clientX;
-                    const endY = e.changedTouches[0].clientY;
-                    const diffX = startX - endX;
-                    const diffY = startY - endY;
+                    const diffX = startX - currentX;
 
-                    // Only horizontal swipes
-                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                        if (diffX > 0 && mobileCurrentPage < mobileTotalPages - 1) {
-                            mobileCurrentPage++;
-                            updateMobilePagePosition();
-                        } else if (diffX < 0 && mobileCurrentPage > 0) {
-                            mobileCurrentPage--;
-                            updateMobilePagePosition();
-                        }
+                    if (isHorizontalSwipe && Math.abs(diffX) > 10) {
+                        handleSwipeEnd(diffX);
+                    } else {
+                        // Re-enable transition and snap back
+                        pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        updateMobilePagePosition();
                     }
+                    isHorizontalSwipe = null;
                 }, { passive: true });
 
                 // Mouse support for desktop in narrow mode
                 pagesContainer.addEventListener('mousedown', (e) => {
                     startX = e.clientX;
+                    currentX = startX;
                     isDragging = true;
+                    pagesWrapper.style.transition = 'none';
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    currentX = e.clientX;
+                    const diffX = startX - currentX;
+                    const baseOffset = getBaseOffset();
+                    let dragOffset = baseOffset + diffX;
+                    dragOffset = applyRubberBand(dragOffset);
+                    pagesWrapper.style.transform = `translateX(-${dragOffset}px)`;
                 });
 
                 document.addEventListener('mouseup', (e) => {
                     if (!isDragging) return;
                     isDragging = false;
 
-                    const diffX = startX - e.clientX;
+                    const diffX = startX - currentX;
+                    pagesWrapper.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
                     if (Math.abs(diffX) > 50) {
-                        if (diffX > 0 && mobileCurrentPage < mobileTotalPages - 1) {
-                            mobileCurrentPage++;
-                            updateMobilePagePosition();
-                        } else if (diffX < 0 && mobileCurrentPage > 0) {
-                            mobileCurrentPage--;
-                            updateMobilePagePosition();
-                        }
+                        handleSwipeEnd(diffX);
+                    } else {
+                        updateMobilePagePosition();
                     }
                 });
             }
@@ -7800,6 +7983,16 @@ if (thumbnailsEl) {
                 let startY = 0;
                 let currentY = 0;
                 let isDragging = false;
+                const CLOSE_THRESHOLD = 150; // Need to drag 150px to close
+
+                function resetViewerPosition() {
+                    viewer.style.transition = 'transform 0.25s ease-out';
+                    viewer.style.transform = 'translateY(0)';
+                    // Remove transition after animation
+                    setTimeout(() => {
+                        viewer.style.transition = '';
+                    }, 250);
+                }
 
                 // Touch events
                 viewer.addEventListener('touchstart', (e) => {
@@ -7807,6 +8000,7 @@ if (thumbnailsEl) {
                         startY = e.touches[0].clientY;
                         currentY = startY;
                         isDragging = true;
+                        viewer.style.transition = 'none'; // Disable transition during drag
                     }
                 }, { passive: true });
 
@@ -7815,6 +8009,7 @@ if (thumbnailsEl) {
                     currentY = e.touches[0].clientY;
                     const diff = currentY - startY;
 
+                    // Only allow dragging down, not up
                     if (diff > 0) {
                         viewer.style.transform = `translateY(${diff}px)`;
                     }
@@ -7826,10 +8021,10 @@ if (thumbnailsEl) {
 
                     const diff = currentY - startY;
 
-                    if (diff > 100) {
+                    if (diff > CLOSE_THRESHOLD) {
                         closeMobileAppViewer();
                     } else {
-                        viewer.style.transform = 'translateY(0)';
+                        resetViewerPosition();
                     }
                 }, { passive: true });
 
@@ -7839,6 +8034,7 @@ if (thumbnailsEl) {
                         startY = e.clientY;
                         currentY = startY;
                         isDragging = true;
+                        viewer.style.transition = 'none';
                         e.preventDefault();
                     }
                 });
@@ -7859,17 +8055,17 @@ if (thumbnailsEl) {
 
                     const diff = currentY - startY;
 
-                    if (diff > 100) {
+                    if (diff > CLOSE_THRESHOLD) {
                         closeMobileAppViewer();
                     } else {
-                        viewer.style.transform = 'translateY(0)';
+                        resetViewerPosition();
                     }
                 });
 
                 viewer.addEventListener('mouseleave', () => {
                     if (isDragging) {
                         isDragging = false;
-                        viewer.style.transform = 'translateY(0)';
+                        resetViewerPosition();
                     }
                 });
             }
